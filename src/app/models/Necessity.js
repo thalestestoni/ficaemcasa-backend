@@ -16,9 +16,8 @@ const NecessitySchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    necessity: {
-      // List of necessities
-      type: String,
+    necessities: {
+      type: [String],
       required: true,
     },
     note: {
@@ -33,7 +32,6 @@ const NecessitySchema = new mongoose.Schema(
       type: PointSchema,
       index: '2dsphere',
     },
-    address: String, // if location is not possible
     attended: {
       type: Boolean,
       required: true,

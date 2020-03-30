@@ -8,25 +8,39 @@ class NecessityController {
       name: Yup.string().required(),
       age: Yup.number().required(),
       childrens: Yup.number().required(),
-      necessity: Yup.string().required(),
+      necessities: Yup.array().required(),
       phone: Yup.string().required(),
       attended: Yup.bool().required(),
+      latitude: Yup.number().required(),
+      longitude: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fields fails' });
     }
 
+    const location = {
+      type: 'Point',
+      coordinates: [req.body.longitude, req.body.latitude],
+    };
+
     const necessity = await Necessity.create({
       name: req.body.name,
       age: req.body.age,
       childrens: req.body.childrens,
-      necessity: req.body.necessity,
+      necessities: req.body.necessities,
       phone: req.body.phone,
-      attended: req.body.attended,
+      attended: req.attended,
+      location,
     });
 
     return res.json(necessity);
+  }
+
+  async index(req, res) {
+    const necessities = await Necessity.find();
+
+    return res.json(necessities);
   }
 }
 
