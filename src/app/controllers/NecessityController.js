@@ -34,6 +34,12 @@ class NecessityController {
       location,
     });
 
+    if (!necessity) {
+      return res.status(500).json({
+        error: 'It was not possible to create the record in the database',
+      });
+    }
+
     return res.json(necessity);
   }
 
