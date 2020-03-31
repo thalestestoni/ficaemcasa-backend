@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import helmet from 'helmet';
 import express from 'express';
 import cors from 'cors';
 import routes from './routes';
@@ -15,6 +16,7 @@ class App {
   }
 
   middlewares() {
+    this.server.use(helmet());
     this.server.use(
       cors({
         origin: process.env.FRONT_URL,
