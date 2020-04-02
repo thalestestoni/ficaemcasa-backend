@@ -1,13 +1,13 @@
 import { Router } from 'express';
 
 import NecessityController from './app/controllers/NecessityController';
+import UserController from './app/controllers/UserController';
 import SearchController from './app/controllers/SearchController';
 
-const routes = new Router();
+const router = Router();
 
-routes.post('/necessity', NecessityController.store);
-routes.get('/necessity', NecessityController.index);
+router.route('/necessity').get(UserController.index).post(UserController.post);
 
-routes.get('/search', SearchController.index);
+router.route('/search').get(SearchController.index);
 
 export default routes;
