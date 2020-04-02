@@ -1,11 +1,11 @@
-import User from '../models/User';
+import Necessity from '../models/Necessity';
 
 class SearchController {
   async index(request, response) {
     const { latitude, longitude } = request.query;
 
-    const necessities = await User.find({
-      necessities: {
+    const necessity = await Necessity.find({
+      necessity: {
         location: {
           $near: {
             $geometry: {
@@ -18,7 +18,7 @@ class SearchController {
       },
     });
 
-    return response.json({ necessities });
+    return response.json({ necessity });
   }
 }
 

@@ -5,11 +5,8 @@ import Necessity from '../models/Necessity';
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      age: Yup.number().required(),
-      childrens: Yup.number().required(),
-      necessities: Yup.array().required(),
-      phone: Yup.string().required(),
+      user_id: Yup.number().required(),
+      necessity: Yup.array().required(),
       attended: Yup.bool().required(),
       latitude: Yup.number().required(),
       longitude: Yup.number().required(),
@@ -25,11 +22,9 @@ class NecessityController {
     };
 
     const necessity = await Necessity.create({
+      user_id: req.body.user_id,
       name: req.body.name,
-      age: req.body.age,
-      childrens: req.body.childrens,
-      necessities: req.body.necessities,
-      phone: req.body.phone,
+      necessity: req.body.necessities,
       attended: req.attended,
       location,
     });
@@ -41,12 +36,6 @@ class NecessityController {
     }
 
     return res.json(necessity);
-  }
-
-  async index(req, res) {
-    const necessities = await Necessity.find();
-
-    return res.json(necessities);
   }
 }
 

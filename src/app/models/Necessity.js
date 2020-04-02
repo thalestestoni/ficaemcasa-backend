@@ -1,31 +1,26 @@
 import mongoose from 'mongoose';
 
+const PointSchema = require('./utils/PointSchema');
+
 const UserSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
+    user_id: {
       type: String,
       required: true,
       unique: true,
     },
-    childrens: {
-      type: Number,
+    necessity: {
+      type: [String],
       required: true,
     },
-    phone: {
-      type: String,
+    attended: {
+      type: Boolean,
       required: true,
+      default: false,
     },
-    birthday: {
-      type: String,
-      required: true,
-    },
-    password_hash: {
-      type: String,
-      required: true,
+    location: {
+      type: PointSchema,
+      index: '2dsphere',
     },
   },
   { timestamps: true }

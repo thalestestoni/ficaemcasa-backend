@@ -1,32 +1,96 @@
 import * as Yup from 'yup';
 
+import bcrypt from 'bcryptjs';
+
 import User from '../models/User';
 
 class UserController {
-  async post(req, res) {
-    console.log(req.body);
-    const user = await User.create({
-      name: req.body.name,
-      age: req.body.age,
-      childrensNumber: req.body.childrensNumber,
-      necessities: req.body.necessities,
-      phone: req.body.phone,
-      password: req.body.password,
+  async store(req, res) {
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+      email: Yup.string().email().required(),
+      childrens: Yup.string().required(),
+      phone: Yup.string().required(),
+      birthday: Yup.string().required(),
+      password: Yup.string().required().min(6),
+      confirm_password: Yup.string().required().min(6),
     });
 
-    return res.json(user);
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
+    const userExists = await User.findOne({ where: { email: req.body.email } });
+
+    if (userExists) {
+      return res.status(400).json({ error: 'User already exists.' });
+    }
+
+    const { password, confirm_password } = req.body;
+
+    if (password !== confirm_password) {
+      return res
+        .status(400)
+        .json({ error: 'The password does not match with confirm password.' });
+    }
+
+    const password_hash = await bcrypt.hash(password, 8);
+
+    const { id, name, email } = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      childrens: req.body.childrens,
+      phone: req.body.phone,
+      birthday: req.body.birthday,
+      password_hash,
+    });
+
+    return res.json(id, name, email);
   }
 
-  async patch(req, res) {
-    const necessities = req.body;
-    console.log(necessities);
-    await User.updateMany({}, { necessities: necessities });
-    return res.status(200);
-  }
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      name: Yup.string(),
+      email: Yup.string().email(),
+      oldPassword: Yup.string().min(6),
+      password: Yup.string()
+        .min(6)
+        .when('oldPassword', (oldPassword, field) =>
+          oldPassword ? field.required() : field
+        ),
+      confirmPassword: Yup.string().when('password', (password, field) =>
+        password ? field.required().oneOf([Yup.ref('password')]) : field
+      ),
+    });
 
-  async index(req, res) {
-    const users = await User.find({});
-    return res.json(users);
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
+    const { email, oldPassword } = req.body;
+
+    const user = await User.findByPk(req.userId);
+
+    if (email && email !== user.email) {
+      const userExists = await User.findOne({ where: { email } });
+
+      if (userExists) {
+        return res.status(400).json({ error: 'User already exists.' });
+      }
+    }
+
+    if (oldPassword && !(await user.checkPassword(oldPassword))) {
+      return res.status(401).json({ error: 'Password does not match' });
+    }
+
+    const { id, name, provider } = await user.update(req.body);
+
+    return res.json({
+      id,
+      name,
+      email,
+      provider,
+    });
   }
 }
 

@@ -1,14 +1,24 @@
 import { Router } from 'express';
 
 import UserController from './app/controllers/UserController';
+import SessionController from './app/controllers/SessionController';
+import NecessityController from './app/controllers/NecessityController';
 import SearchController from './app/controllers/SearchController';
 
-const router = Router();
+import authMiddleware from './app/middlewares/auth';
 
-router.route('/user').post(UserController.post).get(UserController.index);
+const routes = new Router();
 
-router.route('/user/:id').patch(UserController.patch);
+routes.post('/user', UserController.store);
 
-router.route('/search').get(SearchController.index);
+routes.post('/sessions', SessionController.store);
 
-export default router;
+routes.use(authMiddleware);
+
+routes.put('/user/:id', UserController.update);
+
+routes.post('/necessity', NecessityController.store);
+
+routes.get('/search', SearchController.index);
+
+export default routes;
