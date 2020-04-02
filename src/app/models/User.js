@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+const PointSchema = require('./utils/PointSchema');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -10,7 +11,7 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    childrens: {
+    childrensNumber: {
       type: Number,
       required: true,
     },
@@ -36,4 +37,3 @@ const UserSchema = new mongoose.Schema(
 );
 
 export default mongoose.model('User', UserSchema);
-1;
