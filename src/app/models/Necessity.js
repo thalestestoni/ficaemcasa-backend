@@ -7,7 +7,6 @@ const NecessitySchema = new mongoose.Schema(
     user_id: {
       type: String,
       required: true,
-      unique: true,
     },
     necessity: {
       type: [String],
