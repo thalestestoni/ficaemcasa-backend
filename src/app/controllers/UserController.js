@@ -96,6 +96,22 @@ class UserController {
       provider,
     });
   }
+
+  async show(req, res) {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(500).json({ error: 'User not found' });
+    }
+
+    const { id, name, email } = user;
+
+    return res.json({
+      id,
+      name,
+      email,
+    });
+  }
 }
 
 export default new UserController();
