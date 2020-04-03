@@ -13,7 +13,7 @@ class UserController {
       phone: Yup.number().required(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
-      confirm_password: Yup.string().required().min(6),
+      confirmPassword: Yup.string().required().min(6),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -26,9 +26,9 @@ class UserController {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
-    const { password, confirm_password } = req.body;
+    const { password, confirmPassword } = req.body;
 
-    if (password !== confirm_password) {
+    if (password !== confirmPassword) {
       return res
         .status(400)
         .json({ error: 'The password does not match with confirm password.' });
@@ -73,7 +73,7 @@ class UserController {
 
     const user = await User.findById(req.userId);
 
-    const { email, oldPassword } = req.body;
+    const { email, oldPassword, password } = req.body;
 
     if (email && email !== user.email) {
       const userExists = await User.findOne({ email });
@@ -83,17 +83,25 @@ class UserController {
       }
     }
 
-    if (oldPassword && !(await user.checkPassword(oldPassword))) {
+    const oldPasswordMatch = await bcrypt.compare(
+      oldPassword,
+      user.password_hash
+    );
+
+    if (oldPassword && !oldPasswordMatch) {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    const { id, name, provider } = await user.update(req.body);
+    const password_hash = await bcrypt.hash(password, 8);
+
+    req.body.password_hash = password_hash;
+
+    const { id, name } = await User.findByIdAndUpdate(req.userId, req.body);
 
     return res.json({
       id,
       name,
       email,
-      provider,
     });
   }
 
