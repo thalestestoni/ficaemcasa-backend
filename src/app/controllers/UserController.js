@@ -10,7 +10,7 @@ class UserController {
       name: Yup.string().required(),
       email: Yup.string().email().required(),
       childrens: Yup.string().required(),
-      phone: Yup.string().required(),
+      phone: Yup.number().required(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirm_password: Yup.string().required().min(6),
@@ -20,7 +20,7 @@ class UserController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const userExists = await User.findOne({ where: { email: req.body.email } });
+    const userExists = await User.findOne({ email: req.body.email });
 
     if (userExists) {
       return res.status(400).json({ error: 'User already exists.' });
@@ -45,7 +45,11 @@ class UserController {
       password_hash,
     });
 
-    return res.json(id, name, email);
+    return res.json({
+      id,
+      name,
+      email,
+    });
   }
 
   async update(req, res) {
