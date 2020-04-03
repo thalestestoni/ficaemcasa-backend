@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const PointSchema = require('./utils/PointSchema');
 
-const UserSchema = new mongoose.Schema(
+const NecessitySchema = new mongoose.Schema(
   {
     user_id: {
       type: String,
@@ -26,4 +26,4 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('User', UserSchema);
+export default mongoose.model('Necessity', NecessitySchema);
