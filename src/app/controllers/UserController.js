@@ -73,10 +73,10 @@ class UserController {
 
     const { email, oldPassword } = req.body;
 
-    const user = await User.findByPk(req.userId);
+    const user = await User.findById(req.userId);
 
     if (email && email !== user.email) {
-      const userExists = await User.findOne({ where: { email } });
+      const userExists = await User.findOne({ email });
 
       if (userExists) {
         return res.status(400).json({ error: 'User already exists.' });
