@@ -8,15 +8,7 @@ const NecessitySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    necessity: {
-      type: [String],
-      required: true,
-    },
-    attended: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
+    necessity_list: [{ necessity: String, solved: Boolean }],
     location: {
       type: PointSchema,
       index: '2dsphere',
