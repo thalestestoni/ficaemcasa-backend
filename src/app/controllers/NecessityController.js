@@ -23,7 +23,7 @@ class NecessityController {
     const necessity = await Necessity.create({
       user_id: req.userId,
       necessity: req.body.necessity,
-      attended: req.attended,
+      attended: req.body.attended,
       location,
     });
 
