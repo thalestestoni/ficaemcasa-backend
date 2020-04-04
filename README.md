@@ -37,6 +37,14 @@ Entrar na pasta desejada (backend, web, mobile) e rodar o comando pelo terminal:
   yarn
 ```
 
+<h3>Rodar o servidor</h3>
+Para rodar o servidor do backend agora basta entrar pelo terminal ou abrir o terminal do vscode na pasta do repositorio e rodar o comando:
+
+```sh
+  yarn dev
+```
+
+
 ## Estilizador de código
 Atráves do VSCode, procurar a extensão ESLint e Instalar.</p>
 Após isso, abrir as settings do VSCode "CTRL + Shift + P" settings JSON e adicionar os settings abaixo:
