@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import bcrypt from 'bcryptjs';
 
 import User from '../models/User';
+import Necessity from '../models/Necessity';
 
 class UserController {
   async store(req, res) {
@@ -44,6 +45,22 @@ class UserController {
       birthday: req.body.birthday,
       password_hash,
     });
+
+    return res.json({
+      id,
+      name,
+      email,
+    });
+  }
+
+  async show(req, res) {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(500).json({ error: 'User not found' });
+    }
+
+    const { id, name, email } = user;
 
     return res.json({
       id,
@@ -105,20 +122,13 @@ class UserController {
     });
   }
 
-  async show(req, res) {
-    const user = await User.findById(req.userId);
+  async destroy(req, res) {
+    const { userId } = req;
 
-    if (!user) {
-      return res.status(500).json({ error: 'User not found' });
-    }
+    await User.findByIdAndDelete(userId);
+    await Necessity.deleteMany({ user_id: userId });
 
-    const { id, name, email } = user;
-
-    return res.json({
-      id,
-      name,
-      email,
-    });
+    return res.send();
   }
 }
 
