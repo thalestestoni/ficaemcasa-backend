@@ -79,15 +79,9 @@ class NecessityController {
   }
 
   async destroy(req, res) {
-    const schema = Yup.object().shape({
-      necessityId: Yup.Number().required(),
-    });
+    const { id } = req.params;
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fields fails' });
-    }
-
-    await Necessity.findByIdAndDelete(req.body.necessityId);
+    await Necessity.findByIdAndDelete(id);
 
     return res.send();
   }
