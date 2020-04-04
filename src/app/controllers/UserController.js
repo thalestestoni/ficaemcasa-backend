@@ -54,13 +54,15 @@ class UserController {
   }
 
   async show(req, res) {
-    const user = await User.findById(req.userId);
+    const { id } = req.params;
+
+    const user = await User.findById(id);
 
     if (!user) {
       return res.status(500).json({ error: 'User not found' });
     }
 
-    const { id, name, email } = user;
+    const { name, email } = user;
 
     return res.json({
       id,
