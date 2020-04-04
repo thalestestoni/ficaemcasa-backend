@@ -1,4 +1,4 @@
-### Fica em Casa
+## Fica em Casa
 
 O Fica em Casa foi criado para as pessoas ajudarem umas as outras em questões de necessidades básicas em meio ao caos causado pela pandemia do COVID-19.
 
