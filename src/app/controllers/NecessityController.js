@@ -37,15 +37,9 @@ class NecessityController {
   }
 
   async show(req, res) {
-    const schema = Yup.object().shape({
-      necessityId: Yup.Number().required(),
-    });
+    const { id } = req.params;
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fields fails' });
-    }
-
-    const necessity = await Necessity.findById(req.body.necessityId);
+    const necessity = await Necessity.findById(id);
 
     if (!necessity) {
       return res.status(400).json({ error: 'Necessity not found' });
