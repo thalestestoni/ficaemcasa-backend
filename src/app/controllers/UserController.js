@@ -10,7 +10,7 @@ class UserController {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       phone: Yup.string().required(),
-      risk_group: Yup.boolean(),
+      risk_group: Yup.boolean().required(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
@@ -24,10 +24,10 @@ class UserController {
       return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const userExists = await User.findOne({ email: req.body.email });
+    const userExists = await User.findOne({ phone: req.body.phone });
 
     if (userExists) {
-      return res.status(400).json({ error: 'User already exists.' });
+      return res.status(400).json({ error: 'Phone already exists.' });
     }
 
     const { password, confirmPassword } = req.body;
@@ -40,19 +40,12 @@ class UserController {
 
     const password_hash = await bcrypt.hash(password, 8);
 
-    const { id, name, email } = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      sons: req.body.sons,
-      phone: req.body.phone,
-      birthday: req.body.birthday,
-      password_hash,
-    });
+    const { id, name, phone } = await User.create(req.body, password_hash);
 
     return res.json({
       id,
       name,
-      email,
+      phone,
     });
   }
 
