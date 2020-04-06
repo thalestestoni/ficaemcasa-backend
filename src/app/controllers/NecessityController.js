@@ -29,6 +29,24 @@ class NecessityController {
       location,
     });
 
+    if (!necessity) {
+      return res.status(500).json({
+        error: 'It was not possible to create the record in the database',
+      });
+    }
+
+    return res.json(necessity);
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+
+    const necessity = await Necessity.findById(id);
+
+    if (!necessity) {
+      return res.status(400).json({ error: 'Necessity not found' });
+    }
+
     return res.json(necessity);
   }
 

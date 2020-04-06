@@ -4,19 +4,21 @@ class SearchController {
   async index(request, response) {
     const { latitude, longitude } = request.query;
 
-    const necessities = await Necessity.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude],
+    const necessity = await Necessity.find({
+      necessity: {
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: 10000,
           },
-          $maxDistance: 10000,
         },
       },
     });
 
-    return response.json({ necessities });
+    return response.json({ necessity });
   }
 }
 
