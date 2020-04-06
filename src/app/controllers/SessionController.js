@@ -29,17 +29,16 @@ class SessionController {
       if (!passwordMatch) {
         return res.status(401).json({ error: 'Password does not match' });
       }
-
-      delete user['password_hash'];
+      const { id, adress, name, phone, age } = user;
 
       const token = jwt.sign(user.id, authConfig.secret);
       return res.status(200).json({
         user: {
-          id: user.id,
-          name: user.name,
-          adress: user.adress,
-          phone: user.phone,
-          age: user.birthday,
+          id,
+          name,
+          adress,
+          phone,
+          birthday,
         },
         token,
       });
