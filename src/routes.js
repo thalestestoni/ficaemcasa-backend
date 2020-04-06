@@ -5,6 +5,8 @@ import SessionController from './app/controllers/SessionController';
 import NecessityController from './app/controllers/NecessityController';
 import SearchController from './app/controllers/SearchController';
 
+import authMiddleware from './app/middlewares/auth';
+
 const routes = new Router();
 
 routes.post('/user', UserController.store);
