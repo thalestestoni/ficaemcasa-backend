@@ -6,18 +6,30 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    email: {
+    phone: {
       type: String,
       required: true,
       unique: true,
     },
-    childrens: {
-      type: Number,
+    risk_group: {
+      type: Boolean,
       required: true,
     },
-    phone: {
+    sons: {
       type: Number,
-      required: true,
+      required: false,
+    },
+    sons_age_range: {
+      type: String,
+      required: false,
+    },
+    sons_in_home: {
+      type: Number,
+      required: false,
+    },
+    home_mates: {
+      type: Number,
+      required: false,
     },
     birthday: {
       type: String,

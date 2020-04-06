@@ -7,45 +7,40 @@ import User from '../models/User';
 class SessionController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      email: Yup.string().email().required(),
+      phone: Yup.string().required(),
       password: Yup.string().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+      return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const { email, password } = req.body;
+    const { phone, password } = req.body;
 
-    try {
-      const user = await User.findOne({ email });
+    const user = await User.findOne({ phone });
 
-      if (!user) {
-        return res.status(401).json({ error: 'User not found' });
-      }
-
-      const passwordMatch = await bcrypt.compare(password, user.password_hash);
-
-      if (!passwordMatch) {
-        return res.status(401).json({ error: 'Password does not match' });
-      }
-      const { id, adress, name, phone, age } = user;
-
-      const token = jwt.sign(user.id, authConfig.secret);
-      return res.status(200).json({
-        user: {
-          id,
-          name,
-          adress,
-          phone,
-          birthday,
-        },
-        token,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(400).json({ error: error.message });
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
     }
+
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Password does not match' });
+    }
+
+    const { id, name } = user;
+
+    return res.json({
+      user: {
+        id,
+        name,
+        phone,
+      },
+      token: jwt.sign({ id }, authConfig.secret, {
+        expiresIn: authConfig.expiresIn,
+      }),
+    });
   }
 }
 

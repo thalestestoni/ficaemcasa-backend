@@ -9,22 +9,25 @@ class UserController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      email: Yup.string().email().required(),
-      childrensNumber: Yup.number().required(),
-      phone: Yup.number().required(),
+      phone: Yup.string().required(),
+      risk_group: Yup.boolean().required(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
+      sons: Yup.number(),
+      sons_age_range: Yup.string(),
+      sons_in_home: Yup.number(),
+      home_mates: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+      return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const userExists = await User.findOne({ email: req.body.email });
+    const phoneExists = await User.findOne({ phone: req.body.phone });
 
-    if (userExists) {
-      return res.status(400).json({ error: 'User already exists.' });
+    if (phoneExists) {
+      return res.status(400).json({ error: 'Phone already exists.' });
     }
 
     const { password, confirmPassword } = req.body;
@@ -37,19 +40,14 @@ class UserController {
 
     const password_hash = await bcrypt.hash(password, 8);
 
-    const { id, name, email } = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      childrens: req.body.childrensNumber,
-      phone: req.body.phone,
-      birthday: req.body.birthday,
-      password_hash,
-    });
+    req.body.password_hash = password_hash;
+
+    const { id, name, phone } = await User.create(req.body);
 
     return res.json({
       id,
       name,
-      email,
+      phone,
     });
   }
 
@@ -62,12 +60,11 @@ class UserController {
       return res.status(500).json({ error: 'User not found' });
     }
 
-    const { name, email, phone } = user;
+    const { name, phone } = user;
 
     return res.json({
       id,
       name,
-      email,
       phone,
     });
   }
@@ -75,7 +72,7 @@ class UserController {
   async update(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string(),
-      email: Yup.string().email(),
+      phone: Yup.string(),
       oldPassword: Yup.string().min(6),
       password: Yup.string()
         .min(6)
@@ -88,18 +85,18 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+      return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
     const user = await User.findById(req.userId);
 
-    const { email, oldPassword, password } = req.body;
+    const { phone, oldPassword, password } = req.body;
 
-    if (email && email !== user.email) {
-      const userExists = await User.findOne({ email });
+    if (phone && phone !== user.phone) {
+      const phoneExists = await User.findOne({ phone });
 
-      if (userExists) {
-        return res.status(400).json({ error: 'User already exists.' });
+      if (phoneExists) {
+        return res.status(400).json({ error: 'Phone already exists.' });
       }
     }
 
@@ -121,7 +118,7 @@ class UserController {
     return res.json({
       id,
       name,
-      email,
+      phone,
     });
   }
 

@@ -6,13 +6,14 @@ class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
       necessity_list: Yup.array().required(),
-      attended: Yup.bool().required(),
+      name: Yup.string().required(),
+      phone: Yup.string().required(),
       latitude: Yup.number().required(),
       longitude: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fields fails' });
+      return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
     const location = {
@@ -21,8 +22,10 @@ class NecessityController {
     };
 
     const necessity = await Necessity.create({
+      necessity_list: req.body.necessity_list,
+      name: req.body.name,
+      phone: req.body.phone,
       user_id: req.userId,
-      necessity: req.body.necessity,
       location,
     });
 
@@ -30,6 +33,18 @@ class NecessityController {
       return res.status(500).json({
         error: 'It was not possible to create the record in the database',
       });
+    }
+
+    return res.json(necessity);
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+
+    const necessity = await Necessity.findById(id);
+
+    if (!necessity) {
+      return res.status(400).json({ error: 'Necessity not found' });
     }
 
     return res.json(necessity);
