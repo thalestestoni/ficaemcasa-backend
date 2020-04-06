@@ -7,7 +7,7 @@ import User from '../models/User';
 class SessionController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      email: Yup.string().email().required(),
+      phone: Yup.string().required(),
       password: Yup.string().required(),
     });
 
@@ -15,9 +15,9 @@ class SessionController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { email, password } = req.body;
+    const { phone, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ phone });
 
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
@@ -35,7 +35,7 @@ class SessionController {
       user: {
         id,
         name,
-        email,
+        phone,
       },
       token: jwt.sign({ id }, authConfig.secret, {
         expiresIn: authConfig.expiresIn,
