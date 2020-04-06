@@ -9,16 +9,19 @@ class UserController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      email: Yup.string().email().required(),
-      childrens: Yup.string().required(),
-      phone: Yup.number().required(),
+      phone: Yup.string().required(),
+      risk_group: Yup.boolean(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
+      sons: Yup.Number(),
+      sons_age_range: Yup.string(),
+      sons_in_home: Yup.Number(),
+      home_mates: Yup.Number(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+      return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
     const userExists = await User.findOne({ email: req.body.email });
@@ -40,7 +43,7 @@ class UserController {
     const { id, name, email } = await User.create({
       name: req.body.name,
       email: req.body.email,
-      childrens: req.body.childrens,
+      sons: req.body.sons,
       phone: req.body.phone,
       birthday: req.body.birthday,
       password_hash,
@@ -88,7 +91,7 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+      return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
     const user = await User.findById(req.userId);

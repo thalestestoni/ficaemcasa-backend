@@ -6,13 +6,13 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    email: {
+    phone: {
       type: String,
       required: true,
       unique: true,
     },
-    phone: {
-      type: String,
+    risk_group: {
+      type: Boolean,
       required: true,
     },
     sons: {
@@ -24,6 +24,10 @@ const UserSchema = new mongoose.Schema(
       required: false,
     },
     sons_in_home: {
+      type: Number,
+      required: false,
+    },
+    home_mates: {
       type: Number,
       required: false,
     },
