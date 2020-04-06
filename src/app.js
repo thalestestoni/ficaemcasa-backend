@@ -17,11 +17,12 @@ class App {
 
   middlewares() {
     this.server.use(helmet());
-    this.server.use(
-      cors({
-        origin: process.env.FRONT_URL,
-      })
-    );
+    // this.server.use(
+    //   cors({
+    //     origin: process.env.FRONT_URL,
+    //   })
+    // );
+    this.server.use(cors());
     this.server.use(express.json());
   }
 
