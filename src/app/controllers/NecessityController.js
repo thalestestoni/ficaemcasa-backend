@@ -5,9 +5,8 @@ import Necessity from '../models/Necessity';
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
       necessity_list: Yup.array().required(),
-      phone: Yup.string().required(),
+      attended: Yup.bool().required(),
       latitude: Yup.number().required(),
       longitude: Yup.number().required(),
     });
@@ -22,22 +21,63 @@ class NecessityController {
     };
 
     const necessity = await Necessity.create({
-      name: req.body.name,
-      age: req.body.age,
-      childrens: req.body.childrens,
-      necessities: req.body.necessities,
-      phone: req.body.phone,
-      attended: req.attended,
+      user_id: req.userId,
+      necessity_list: req.body.necessity_list,
+      attended: req.body.attended,
       location,
     });
+
+    if (!necessity) {
+      return res.status(500).json({
+        error: 'It was not possible to create the record in the database',
+      });
+    }
+
+    return res.json(necessity);
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+
+    const necessity = await Necessity.findById(id);
+
+    if (!necessity) {
+      return res.status(400).json({ error: 'Necessity not found' });
+    }
 
     return res.json(necessity);
   }
 
   async index(req, res) {
-    const necessities = await Necessity.find();
+    const { userId } = req.params;
 
-    return res.json(necessities);
+    const necessity = await Necessity.find({ user_id: userId });
+
+    if (!necessity) {
+      return res.status(400).json({ error: 'Necessity or user not found' });
+    }
+
+    return res.json(necessity);
+  }
+
+  async update(req, res) {
+    const { id } = req.params;
+
+    const necessity = await Necessity.findByIdAndUpdate(id, req.body);
+
+    if (!necessity) {
+      return res.status(400).json({ error: 'Necessity not found' });
+    }
+
+    return res.json(necessity);
+  }
+
+  async destroy(req, res) {
+    const { id } = req.params;
+
+    await Necessity.findByIdAndDelete(id);
+
+    return res.send();
   }
 }
 
