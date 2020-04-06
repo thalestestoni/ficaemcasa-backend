@@ -4,7 +4,10 @@ const PointSchema = require('./utils/PointSchema');
 
 const NecessitySchema = new mongoose.Schema(
   {
-    necessity_list: [{ category: String, necessity: String, solved: Boolean }],
+    necessity_list: {
+      type: [{ category: String, necessity: String, solved: Boolean }],
+      required: true,
+    },
     note: {
       type: String,
       required: false,
