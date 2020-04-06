@@ -6,11 +6,8 @@ class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      age: Yup.number().required(),
-      childrens: Yup.number().required(),
-      necessities: Yup.array().required(),
+      necessity_list: Yup.array().required(),
       phone: Yup.string().required(),
-      attended: Yup.bool().required(),
       latitude: Yup.number().required(),
       longitude: Yup.number().required(),
     });
