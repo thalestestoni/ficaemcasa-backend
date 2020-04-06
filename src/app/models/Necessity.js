@@ -24,7 +24,6 @@ const NecessitySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    necessity_list: [{ necessity: String, solved: Boolean }],
     location: {
       type: PointSchema,
       index: '2dsphere',
