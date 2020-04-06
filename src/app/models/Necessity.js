@@ -4,20 +4,9 @@ const PointSchema = require('./utils/PointSchema');
 
 const NecessitySchema = new mongoose.Schema(
   {
+    necessity_list: [{ category: String, necessity: String, solved: Boolean }],
     name: {
       type: String,
-      required: true,
-    },
-    age: {
-      type: Number,
-      required: true,
-    },
-    childrens: {
-      type: Number,
-      required: true,
-    },
-    necessities: {
-      type: [String],
       required: true,
     },
     note: {
@@ -31,11 +20,6 @@ const NecessitySchema = new mongoose.Schema(
     location: {
       type: PointSchema,
       index: '2dsphere',
-    },
-    attended: {
-      type: Boolean,
-      required: true,
-      default: false,
     },
   },
   { timestamps: true }
