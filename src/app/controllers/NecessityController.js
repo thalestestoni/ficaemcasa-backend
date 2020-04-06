@@ -5,7 +5,7 @@ import Necessity from '../models/Necessity';
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      necessity: Yup.array().required(),
+      necessity_list: Yup.array().required(),
       attended: Yup.bool().required(),
       latitude: Yup.number().required(),
       longitude: Yup.number().required(),

@@ -62,12 +62,13 @@ class UserController {
       return res.status(500).json({ error: 'User not found' });
     }
 
-    const { name, email } = user;
+    const { name, email, phone } = user;
 
     return res.json({
       id,
       name,
       email,
+      phone,
     });
   }
 
