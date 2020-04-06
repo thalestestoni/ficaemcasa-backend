@@ -50,18 +50,6 @@ class NecessityController {
     return res.json(necessity);
   }
 
-  async show(req, res) {
-    const { id } = req.params;
-
-    const necessity = await Necessity.findById(id);
-
-    if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
-    }
-
-    return res.json(necessity);
-  }
-
   async index(req, res) {
     const { userId } = req.params;
 
