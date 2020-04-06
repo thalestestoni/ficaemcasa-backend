@@ -17,30 +17,36 @@ class SessionController {
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    try {
+      const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Password does not match' });
+      }
+
+      delete user['password_hash'];
+
+      const token = jwt.sign(user.id, authConfig.secret);
+      return res.status(200).json({
+        user: {
+          id: user.id,
+          name: user.name,
+          adress: user.adress,
+          phone: user.phone,
+          age: user.birthday,
+        },
+        token,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({ error: error.message });
     }
-
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
-
-    if (!passwordMatch) {
-      return res.status(401).json({ error: 'Password does not match' });
-    }
-
-    const { id, name } = user;
-
-    return res.json({
-      user: {
-        id,
-        name,
-        email,
-      },
-      token: jwt.sign({ id }, authConfig.secret, {
-        expiresIn: authConfig.expiresIn,
-      }),
-    });
   }
 }
 

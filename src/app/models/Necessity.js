@@ -12,11 +12,6 @@ const NecessitySchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
-    attended: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
     location: {
       type: PointSchema,
       index: '2dsphere',

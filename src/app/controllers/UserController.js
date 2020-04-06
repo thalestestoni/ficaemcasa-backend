@@ -10,7 +10,7 @@ class UserController {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
-      childrens: Yup.string().required(),
+      childrensNumber: Yup.number().required(),
       phone: Yup.number().required(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
@@ -40,7 +40,7 @@ class UserController {
     const { id, name, email } = await User.create({
       name: req.body.name,
       email: req.body.email,
-      childrens: req.body.childrens,
+      childrens: req.body.childrensNumber,
       phone: req.body.phone,
       birthday: req.body.birthday,
       password_hash,
