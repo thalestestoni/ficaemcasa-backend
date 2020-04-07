@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 
 const PointSchema = require('./utils/PointSchema');
 
-const NecessitySchema = new mongoose.Schema(
+const AssistSchema = new mongoose.Schema(
   {
-    necessities: {
-      type: [{ category: String, necessity: [String] }],
+    assists: {
+      type: [{ category: String, assist: [String] }],
       required: true,
     },
     note: {
@@ -32,4 +32,4 @@ const NecessitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Necessity', NecessitySchema);
+export default mongoose.model('Assist', AssistSchema);

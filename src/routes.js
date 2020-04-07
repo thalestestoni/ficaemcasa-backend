@@ -3,7 +3,9 @@ import { Router } from 'express';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import NecessityController from './app/controllers/NecessityController';
-import SearchController from './app/controllers/SearchController';
+import AssistController from './app/controllers/AssistController';
+import SearchNecessityController from './app/controllers/SearchNecessityController';
+import SearchAssistController from './app/controllers/SearchAssistController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -24,6 +26,13 @@ routes.get('/necessity/:id', NecessityController.show);
 routes.get('/necessity/:userId/user', NecessityController.index);
 routes.delete('/necessity/:id', NecessityController.destroy);
 
-routes.get('/search', SearchController.index);
+routes.post('/assist', AssistController.store);
+routes.put('/assist/:id', AssistController.update);
+routes.get('/assist/:id', AssistController.show);
+routes.get('/assist/:userId/user', AssistController.index);
+routes.delete('/assist/:id', AssistController.destroy);
+
+routes.get('/search/necessity', SearchNecessityController.index);
+routes.get('/search/assist', SearchAssistController.index);
 
 export default routes;

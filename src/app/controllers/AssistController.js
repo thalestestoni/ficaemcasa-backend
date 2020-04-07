@@ -1,11 +1,11 @@
 import * as Yup from 'yup';
 
-import Necessity from '../models/Necessity';
+import Assist from '../models/Assist';
 
-class NecessityController {
+class AssistController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      necessities: Yup.array().required(),
+      assists: Yup.array().required(),
       name: Yup.string().required(),
       phone: Yup.string().required(),
       latitude: Yup.number().required(),
@@ -21,60 +21,60 @@ class NecessityController {
       coordinates: [req.body.longitude, req.body.latitude],
     };
 
-    const necessity = await Necessity.create({
-      necessities: req.body.necessities,
+    const assist = await Assist.create({
+      assists: req.body.assists,
       name: req.body.name,
       phone: req.body.phone,
       user_id: req.userId,
       location,
     });
 
-    return res.json(necessity);
+    return res.json(assist);
   }
 
   async show(req, res) {
     const { id } = req.params;
 
-    const necessity = await Necessity.findById(id);
+    const assist = await Assist.findById(id);
 
-    if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
+    if (!assist) {
+      return res.status(400).json({ error: 'Assist not found' });
     }
 
-    return res.json(necessity);
+    return res.json(assist);
   }
 
   async index(req, res) {
     const { userId } = req.params;
 
-    const necessity = await Necessity.find({ user_id: userId });
+    const assist = await Assist.find({ user_id: userId });
 
-    if (!necessity) {
-      return res.status(400).json({ error: 'Necessity or user not found' });
+    if (!assist) {
+      return res.status(400).json({ error: 'Assist or user not found' });
     }
 
-    return res.json(necessity);
+    return res.json(assist);
   }
 
   async update(req, res) {
     const { id } = req.params;
 
-    const necessity = await Necessity.findByIdAndUpdate(id, req.body);
+    const assist = await Assist.findByIdAndUpdate(id, req.body);
 
-    if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
+    if (!assist) {
+      return res.status(400).json({ error: 'Assist not found' });
     }
 
-    return res.json(necessity);
+    return res.json(assist);
   }
 
   async destroy(req, res) {
     const { id } = req.params;
 
-    await Necessity.findByIdAndDelete(id);
+    await Assist.findByIdAndDelete(id);
 
     return res.send();
   }
 }
 
-export default new NecessityController();
+export default new AssistController();
