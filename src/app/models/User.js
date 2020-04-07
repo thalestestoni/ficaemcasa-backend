@@ -6,6 +6,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    nickname: {
+      type: String,
+      required: false,
+    },
     phone: {
       type: String,
       required: true,
