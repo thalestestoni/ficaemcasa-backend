@@ -5,7 +5,7 @@ class SearchController {
     const { latitude, longitude, categories } = req.query;
 
     const necessity = await Necessity.find({
-      necessity_list: {
+      necessities: {
         $elemMatch: {
           category: {
             $in: categories,
