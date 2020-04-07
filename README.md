@@ -70,4 +70,4 @@ Após isso, abrir as settings do VSCode "CTRL + Shift + P" settings JSON e adici
     "javascript": "javascriptreact",
   },
 ```
-Instalar o EditorConfig através das extensões do VSCode
+Instalar o EditorConfig através das extensões do VSCode.
