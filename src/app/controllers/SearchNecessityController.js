@@ -2,7 +2,9 @@ import Necessity from '../models/Necessity';
 
 class SearchController {
   async index(req, res) {
-    const { latitude, longitude, categories } = req.query;
+    const { latitude, longitude } = req.query;
+
+    const { categories } = req.body;
 
     const necessity = await Necessity.find({
       necessities: {

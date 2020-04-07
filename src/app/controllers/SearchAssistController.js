@@ -2,7 +2,9 @@ import Assist from '../models/Assist';
 
 class SearchController {
   async index(req, res) {
-    const { latitude, longitude, categories } = req.query;
+    const { latitude, longitude } = req.query;
+
+    const { categories } = req.body;
 
     const assist = await Assist.find({
       assists: {
