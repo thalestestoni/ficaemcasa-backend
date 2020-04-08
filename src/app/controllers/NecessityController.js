@@ -21,13 +21,10 @@ class NecessityController {
       coordinates: [req.body.longitude, req.body.latitude],
     };
 
-    const necessity = await Necessity.create({
-      necessities: req.body.necessities,
-      name: req.body.name,
-      phone: req.body.phone,
-      user_id: req.userId,
-      location,
-    });
+    req.body.location = location;
+    req.body.user_id = req.userId;
+
+    const necessity = await Necessity.create(req.body);
 
     return res.json(necessity);
   }
