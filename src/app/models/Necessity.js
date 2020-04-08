@@ -5,7 +5,7 @@ const PointSchema = require('./utils/PointSchema');
 const NecessitySchema = new mongoose.Schema(
   {
     necessities: {
-      type: [{ category: String, necessity: [String] }],
+      type: [{ category: String, necessity: String, quantity: String }],
       required: true,
     },
     note: {
