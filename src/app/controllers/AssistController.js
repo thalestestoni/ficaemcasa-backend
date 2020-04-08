@@ -21,13 +21,10 @@ class AssistController {
       coordinates: [req.body.longitude, req.body.latitude],
     };
 
-    const assist = await Assist.create({
-      assists: req.body.assists,
-      name: req.body.name,
-      phone: req.body.phone,
-      user_id: req.userId,
-      location,
-    });
+    req.body.location = location;
+    req.body.user_id = req.userId;
+
+    const assist = await Assist.create(req.body);
 
     return res.json(assist);
   }
