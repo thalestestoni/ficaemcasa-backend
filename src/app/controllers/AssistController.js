@@ -5,7 +5,7 @@ import Assist from '../models/Assist';
 class AssistController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      assists: Yup.array().required(),
+      category: Yup.string().required(),
       name: Yup.string().required(),
       phone: Yup.string().required(),
       latitude: Yup.number().required(),
@@ -24,15 +24,28 @@ class AssistController {
     req.body.location = location;
     req.body.user_id = req.userId;
 
-    const assist = await Assist.create(req.body);
+    const { _id, category, note, name, phone } = await Assist.create(req.body);
 
-    return res.json(assist);
+    return res.json({
+      _id,
+      category,
+      note,
+      name,
+      phone,
+    });
   }
 
   async show(req, res) {
     const { id } = req.params;
 
-    const assist = await Assist.findById(id);
+    const assist = await Assist.findById(id, {
+      _id: 0,
+      user_id: 0,
+      location: 0,
+      createdAt: 0,
+      updatedAt: 0,
+      __v: 0,
+    });
 
     if (!assist) {
       return res.status(400).json({ error: 'Assist not found' });
@@ -44,7 +57,16 @@ class AssistController {
   async index(req, res) {
     const { userId } = req.params;
 
-    const assist = await Assist.find({ user_id: userId });
+    const assist = await Assist.find(
+      { user_id: userId },
+      {
+        user_id: 0,
+        location: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        __v: 0,
+      }
+    );
 
     if (!assist) {
       return res.status(400).json({ error: 'Assist or user not found' });
@@ -56,19 +78,46 @@ class AssistController {
   async update(req, res) {
     const { id } = req.params;
 
-    const assist = await Assist.findByIdAndUpdate(id, req.body);
+    const assist = await Assist.findById(id);
 
     if (!assist) {
       return res.status(400).json({ error: 'Assist not found' });
     }
 
-    return res.json(assist);
+    if (assist.user_id !== req.userId) {
+      return res
+        .status(401)
+        .json({ error: "You don't have permission to update this assist" });
+    }
+
+    await assist.update(req.body);
+
+    const { category, note, name, phone } = await Assist.findById(id);
+
+    return res.json({
+      category,
+      note,
+      name,
+      phone,
+    });
   }
 
   async destroy(req, res) {
     const { id } = req.params;
 
-    await Assist.findByIdAndDelete(id);
+    const assist = await Assist.findById(id);
+
+    if (!assist) {
+      return res.status(400).json({ error: 'Assist not found' });
+    }
+
+    if (assist.user_id !== req.userId) {
+      return res
+        .status(401)
+        .json({ error: "You don't have permission to delete this assist" });
+    }
+
+    await assist.remove();
 
     return res.send();
   }
