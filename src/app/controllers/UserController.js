@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 
 import User from '../models/User';
 import Necessity from '../models/Necessity';
+import Assist from '../models/Assist';
 
 class UserController {
   async store(req, res) {
@@ -54,19 +55,19 @@ class UserController {
   async show(req, res) {
     const { id } = req.params;
 
-    const user = await User.findById(id);
+    const user = await User.findById(id, {
+      _id: 0,
+      password_hash: 0,
+      createdAt: 0,
+      updatedAt: 0,
+      __v: 0,
+    });
 
     if (!user) {
       return res.status(500).json({ error: 'User not found' });
     }
 
-    const { name, phone } = user;
-
-    return res.json({
-      id,
-      name,
-      phone,
-    });
+    return res.json(user);
   }
 
   async update(req, res) {
@@ -125,8 +126,22 @@ class UserController {
   async destroy(req, res) {
     const { userId } = req;
 
-    await User.findByIdAndDelete(userId);
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ error: 'User not found' });
+    }
+
+    if (user.id !== userId) {
+      return res
+        .status(401)
+        .json({ error: "You don't have permission to delete this user" });
+    }
+
+    await user.remove();
+
     await Necessity.deleteMany({ user_id: userId });
+    await Assist.deleteMany({ user_id: userId });
 
     return res.send();
   }

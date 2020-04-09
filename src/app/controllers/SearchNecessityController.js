@@ -6,26 +6,45 @@ class SearchController {
 
     const { categories } = req.body;
 
-    const necessity = await Necessity.find({
-      necessities: {
-        $elemMatch: {
-          category: {
-            $in: categories,
-          },
-        },
-      },
-      location: {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude],
-          },
-          $maxDistance: 10000,
-        },
-      },
-    });
+    // agrupar resultado por user_id e category
 
-    return res.json({ necessity });
+    // const necessity = await Necessity.find({
+    //   category: {
+    //     $in: categories,
+    //   },
+    //   location: {
+    //     $near: {
+    //       $geometry: {
+    //         type: 'Point',
+    //         coordinates: [longitude, latitude],
+    //       },
+    //       $maxDistance: 10000,
+    //     },
+    //   },
+    // });
+
+    const necessity = await Necessity.aggregate([
+      {
+        $project: {
+          createdAt: 0,
+          updatedAt: 0,
+          __v: 0,
+        },
+      },
+      {
+        $group: {
+          _id: '$user_id',
+          category: {
+            $addToSet: '$category',
+          },
+          name: {
+            $addToSet: '$name',
+          },
+        },
+      },
+    ]);
+
+    return res.json(necessity);
   }
 }
 
