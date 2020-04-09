@@ -4,8 +4,8 @@ const PointSchema = require('./utils/PointSchema');
 
 const AssistSchema = new mongoose.Schema(
   {
-    assists: {
-      type: [{ category: String, assist: [String] }],
+    category: {
+      type: String,
       required: true,
     },
     note: {
