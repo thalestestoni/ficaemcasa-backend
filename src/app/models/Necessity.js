@@ -4,9 +4,17 @@ const PointSchema = require('./utils/PointSchema');
 
 const NecessitySchema = new mongoose.Schema(
   {
-    necessities: {
-      type: [{ category: String, necessity: String, quantity: String }],
+    item: {
+      type: String,
       required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: false,
     },
     note: {
       type: String,
@@ -27,6 +35,7 @@ const NecessitySchema = new mongoose.Schema(
     location: {
       type: PointSchema,
       index: '2dsphere',
+      required: true,
     },
   },
   { timestamps: true }
