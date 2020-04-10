@@ -5,7 +5,7 @@ import Necessity from '../models/Necessity';
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      item: Yup.string().required(),
+      items: Yup.array().required(),
       category: Yup.string().required(),
       name: Yup.string().required(),
       phone: Yup.string().required(),
@@ -22,20 +22,21 @@ class NecessityController {
       coordinates: [req.body.longitude, req.body.latitude],
     };
 
-    req.body.location = location;
-    req.body.user_id = req.userId;
+    const { items } = req.body;
 
-    const necessity = await Necessity.create(req.body);
+    items.map((item) =>
+      Object.assign(item, {
+        category: req.body.category,
+        name: req.body.name,
+        phone: req.body.phone,
+        user_id: req.userId,
+        location,
+      })
+    );
 
-    const { _id, item, category, name, phone } = necessity;
+    const necessity = await Necessity.insertMany(items);
 
-    return res.json({
-      _id,
-      item,
-      category,
-      name,
-      phone,
-    });
+    return res.json(necessity);
   }
 
   async show(req, res) {

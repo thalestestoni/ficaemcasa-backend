@@ -16,6 +16,10 @@ const NecessitySchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
+    unitMeasure: {
+      type: String,
+      required: false,
+    },
     note: {
       type: String,
       required: false,
