@@ -15,27 +15,21 @@ class UserController {
       name: Yup.string().required(),
       phone: Yup.string().required(),
       isNeedy: Yup.boolean().required(),
-      birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
-      sonsQuantity: Yup.number(),
-      sonsAverageAge: Yup.number(),
-      sonsAtHome: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const phoneExists = await User.findOne({ phone: req.body.phone });
+    const { phone, password, confirmPassword } = req.body;
+
+    const phoneExists = await User.findOne({ phone });
 
     if (phoneExists) {
       return res.status(400).json({ error: 'Phone already exists.' });
     }
-
-    let userToAdd = req.body;
-
-    const { password, confirmPassword } = userToAdd;
 
     if (password !== confirmPassword) {
       return res
@@ -45,11 +39,11 @@ class UserController {
 
     const password_hash = await bcrypt.hash(password, 8);
 
+    const userToAdd = req.body;
+
     userToAdd.password_hash = password_hash;
 
-    console.log(userToAdd);
-
-    const { id, name, phone } = await User.create(userToAdd);
+    const { id, name } = await User.create(userToAdd);
 
     return res.json({
       user: {
@@ -83,8 +77,6 @@ class UserController {
 
   async update(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string(),
-      phone: Yup.string(),
       oldPassword: Yup.string().min(6),
       password: Yup.string()
         .min(6)
@@ -112,20 +104,24 @@ class UserController {
       }
     }
 
-    const oldPasswordMatch = await bcrypt.compare(
-      oldPassword,
-      user.password_hash
-    );
+    if (oldPassword) {
+      const oldPasswordMatch = await bcrypt.compare(
+        oldPassword,
+        user.password_hash
+      );
 
-    if (oldPassword && !oldPasswordMatch) {
-      return res.status(401).json({ error: 'Password does not match' });
+      if (oldPassword && !oldPasswordMatch) {
+        return res.status(401).json({ error: 'Password does not match' });
+      }
     }
 
     const password_hash = await bcrypt.hash(password, 8);
 
-    req.body.password_hash = password_hash;
+    const userToUpdate = req.body;
 
-    const { id, name } = await User.findByIdAndUpdate(req.userId, req.body);
+    userToUpdate.password_hash = password_hash;
+
+    const { id, name } = await User.findByIdAndUpdate(req.userId, userToUpdate);
 
     return res.json({
       id,
