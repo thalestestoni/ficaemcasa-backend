@@ -5,12 +5,22 @@ import Necessity from '../models/Necessity';
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      items: Yup.array().required(),
-      category: Yup.string().required(),
-      name: Yup.string().required(),
-      phone: Yup.string().required(),
-      latitude: Yup.number().required(),
-      longitude: Yup.number().required(),
+      necessities: Yup.object({
+        category: Yup.string().required(),
+        items: Yup.array(
+          Yup.object({
+            item: Yup.string().required(),
+            quantity: Yup.number().required(),
+          })
+        ).required(),
+      }).required(),
+      user: Yup.object({
+        userId: Yup.string().required(),
+        name: Yup.string().required(),
+        phone: Yup.string().required(),
+        latitude: Yup.number().required(),
+        longitude: Yup.number().required(),
+      }).required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -19,22 +29,12 @@ class NecessityController {
 
     const location = {
       type: 'Point',
-      coordinates: [req.body.longitude, req.body.latitude],
+      coordinates: [req.body.user.longitude, req.body.user.latitude],
     };
 
-    const { items } = req.body;
+    req.body.user.location = location;
 
-    items.map((item) =>
-      Object.assign(item, {
-        category: req.body.category,
-        name: req.body.name,
-        phone: req.body.phone,
-        user_id: req.userId,
-        location,
-      })
-    );
-
-    const necessity = await Necessity.insertMany(items);
+    const necessity = await Necessity.create(req.body);
 
     return res.json(necessity);
   }

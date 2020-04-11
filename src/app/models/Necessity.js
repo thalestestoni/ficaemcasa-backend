@@ -4,42 +4,26 @@ const PointSchema = require('./utils/PointSchema');
 
 const NecessitySchema = new mongoose.Schema(
   {
-    item: {
-      type: String,
-      required: true,
+    necessities: {
+      category: { type: String, require: true },
+      items: [
+        {
+          item: { type: String, require: true },
+          quantity: { type: Number, require: true },
+          unitMeasure: { type: String, require: false },
+        },
+      ],
+      status: { type: String, require: true, default: 'available' },
     },
-    category: {
-      type: String,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: false,
-    },
-    unitMeasure: {
-      type: String,
-      required: false,
-    },
-    note: {
-      type: String,
-      required: false,
-    },
-    user_id: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    phone: {
-      type: String,
-      required: true,
-    },
-    location: {
-      type: PointSchema,
-      index: '2dsphere',
-      required: true,
+    user: {
+      userId: { type: mongoose.ObjectId, require: true },
+      name: { type: String, require: true },
+      phone: { type: String, require: true },
+      location: {
+        type: PointSchema,
+        index: '2dsphere',
+        required: true,
+      },
     },
   },
   { timestamps: true }
