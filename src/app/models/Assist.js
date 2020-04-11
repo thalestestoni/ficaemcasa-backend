@@ -4,29 +4,17 @@ const PointSchema = require('./utils/PointSchema');
 
 const AssistSchema = new mongoose.Schema(
   {
-    category: {
-      type: String,
-      required: true,
-    },
-    note: {
-      type: String,
-      required: false,
-    },
-    user_id: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    phone: {
-      type: String,
-      required: true,
-    },
-    location: {
-      type: PointSchema,
-      index: '2dsphere',
+    category: { type: String, require: true },
+    note: { type: String, required: false },
+    user: {
+      userId: { type: mongoose.ObjectId, require: true },
+      name: { type: String, require: true },
+      phone: { type: String, require: true },
+      location: {
+        type: PointSchema,
+        index: '2dsphere',
+        required: true,
+      },
     },
   },
   { timestamps: true }
