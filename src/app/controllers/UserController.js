@@ -2,6 +2,9 @@ import * as Yup from 'yup';
 
 import bcrypt from 'bcryptjs';
 
+import jwt from 'jsonwebtoken';
+import authConfig from '../../config/auth';
+
 import User from '../models/User';
 import Necessity from '../models/Necessity';
 import Assist from '../models/Assist';
@@ -11,14 +14,13 @@ class UserController {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       phone: Yup.string().required(),
-      risk_group: Yup.boolean().required(),
+      isNeedy: Yup.boolean().required(),
       birthday: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
-      sons: Yup.number(),
-      sons_age_range: Yup.string(),
-      sons_in_home: Yup.number(),
-      home_mates: Yup.number(),
+      sonsQuantity: Yup.number(),
+      sonsAverageAge: Yup.number(),
+      sonsAtHome: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -31,7 +33,9 @@ class UserController {
       return res.status(400).json({ error: 'Phone already exists.' });
     }
 
-    const { password, confirmPassword } = req.body;
+    let userToAdd = req.body;
+
+    const { password, confirmPassword } = userToAdd;
 
     if (password !== confirmPassword) {
       return res
@@ -41,14 +45,21 @@ class UserController {
 
     const password_hash = await bcrypt.hash(password, 8);
 
-    req.body.password_hash = password_hash;
+    userToAdd.password_hash = password_hash;
 
-    const { id, name, phone } = await User.create(req.body);
+    console.log(userToAdd);
+
+    const { id, name, phone } = await User.create(userToAdd);
 
     return res.json({
-      id,
-      name,
-      phone,
+      user: {
+        id,
+        name,
+        phone,
+      },
+      token: jwt.sign({ id }, authConfig.secret, {
+        expiresIn: authConfig.expiresIn,
+      }),
     });
   }
 

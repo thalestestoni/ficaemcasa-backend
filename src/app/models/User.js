@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    risk_group: {
+    isNeedy: {
       type: Boolean,
       required: true,
     },
@@ -23,15 +23,11 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
-    sons_age_range: {
+    sonsAverageAge: {
       type: String,
       required: false,
     },
-    sons_in_home: {
-      type: Number,
-      required: false,
-    },
-    home_mates: {
+    sonsAtHome: {
       type: Number,
       required: false,
     },
