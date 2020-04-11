@@ -33,7 +33,12 @@ const UserSchema = new mongoose.Schema(
     },
     birthday: {
       type: String,
-      required: true,
+      required: false,
+    },
+    active: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
     password_hash: {
       type: String,
