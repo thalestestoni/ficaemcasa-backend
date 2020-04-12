@@ -16,7 +16,7 @@ const NecessitySchema = new mongoose.Schema(
       status: { type: String, require: true, default: 'available' },
     },
     user: {
-      userId: { type: mongoose.ObjectId, require: true },
+      id: { type: mongoose.ObjectId, require: true },
       name: { type: String, require: true },
       phone: { type: String, require: true },
       location: {

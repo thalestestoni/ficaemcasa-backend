@@ -15,7 +15,7 @@ class NecessityController {
         ).required(),
       }).required(),
       user: Yup.object({
-        userId: Yup.string().required(),
+        id: Yup.string().required(),
         name: Yup.string().required(),
         phone: Yup.string().required(),
         latitude: Yup.number().required(),
