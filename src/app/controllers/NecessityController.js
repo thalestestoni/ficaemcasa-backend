@@ -1,40 +1,41 @@
 import * as Yup from 'yup';
 
+import mongoose from 'mongoose';
+
 import Necessity from '../models/Necessity';
 
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      necessities: Yup.object({
-        category: Yup.string().required(),
-        items: Yup.array(
-          Yup.object({
-            item: Yup.string().required(),
-            quantity: Yup.number().required(),
-          })
-        ).required(),
-      }).required(),
-      user: Yup.object({
-        id: Yup.string().required(),
-        name: Yup.string().required(),
-        phone: Yup.string().required(),
-        latitude: Yup.number().required(),
-        longitude: Yup.number().required(),
-      }).required(),
+      necessities: Yup.array(
+        Yup.object({
+          category: Yup.string().required(),
+          item: Yup.string().required(),
+          quantity: Yup.number().required(),
+          userId: Yup.string().required(),
+          userName: Yup.string().required(),
+          userPhone: Yup.string().required(),
+          longitude: Yup.number().required(),
+          latitude: Yup.number().required(),
+        })
+      ).required(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const location = {
-      type: 'Point',
-      coordinates: [req.body.user.longitude, req.body.user.latitude],
-    };
+    const { necessities } = req.body;
 
-    req.body.user.location = location;
+    necessities.forEach((necessity) => {
+      const location = {
+        type: 'Point',
+        coordinates: [necessity.longitude, necessity.latitude],
+      };
+      necessity.userLocation = location;
+    });
 
-    const necessity = await Necessity.create(req.body);
+    const necessity = await Necessity.insertMany(necessities);
 
     return res.json(necessity);
   }
@@ -43,9 +44,6 @@ class NecessityController {
     const { id } = req.params;
 
     const necessity = await Necessity.findById(id, {
-      _id: 0,
-      user_id: 0,
-      location: 0,
       createdAt: 0,
       updatedAt: 0,
       __v: 0,
@@ -61,16 +59,31 @@ class NecessityController {
   async index(req, res) {
     const { userId } = req.params;
 
-    const necessity = await Necessity.find(
-      { user_id: userId },
+    const necessity = await Necessity.aggregate([
+      { $match: { userId: mongoose.Types.ObjectId(userId) } },
       {
-        user_id: 0,
-        location: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        __v: 0,
-      }
-    );
+        $group: {
+          _id: '$category',
+          items: {
+            $push: {
+              _id: '$_id',
+              item: '$item',
+              quantity: '$quantity',
+              unitMeasure: '$unitMeasure',
+              status: '$status',
+            },
+          },
+        },
+      },
+      {
+        $addFields: { category: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
 
     if (!necessity) {
       return res.status(400).json({ error: 'Necessity or user not found' });
@@ -88,7 +101,7 @@ class NecessityController {
       return res.status(400).json({ error: 'Necessity not found' });
     }
 
-    if (necessity.user_id !== req.userId) {
+    if (String(necessity.userId) !== req.userId) {
       return res
         .status(401)
         .json({ error: "You don't have permission to update this necessity" });
@@ -96,17 +109,12 @@ class NecessityController {
 
     await necessity.update(req.body);
 
-    const { item, category, quantity, name, phone } = await Necessity.findById(
-      id
-    );
-
-    return res.json({
-      item,
-      category,
-      quantity,
-      name,
-      phone,
+    const necessityUpdated = await Necessity.findById(id, {
+      userLocation: 0,
+      __v: 0,
     });
+
+    return res.json(necessityUpdated);
   }
 
   async destroy(req, res) {
@@ -118,7 +126,7 @@ class NecessityController {
       return res.status(400).json({ error: 'Necessity not found' });
     }
 
-    if (necessity.user_id !== req.userId) {
+    if (String(necessity.userId) !== req.userId) {
       return res
         .status(401)
         .json({ error: "You don't have permission to delete this necessity" });
