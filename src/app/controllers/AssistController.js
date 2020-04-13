@@ -5,43 +5,42 @@ import Assist from '../models/Assist';
 class AssistController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      category: Yup.string().required(),
-      name: Yup.string().required(),
-      phone: Yup.string().required(),
-      latitude: Yup.number().required(),
-      longitude: Yup.number().required(),
+      assists: Yup.array(
+        Yup.object({
+          category: Yup.string().required(),
+          note: Yup.string(),
+          userId: Yup.string().required(),
+          userName: Yup.string().required(),
+          userPhone: Yup.string().required(),
+          longitude: Yup.number().required(),
+          latitude: Yup.number().required(),
+        })
+      ).required(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const location = {
-      type: 'Point',
-      coordinates: [req.body.longitude, req.body.latitude],
-    };
+    const { assists } = req.body;
 
-    req.body.location = location;
-    req.body.user_id = req.userId;
-
-    const { _id, category, note, name, phone } = await Assist.create(req.body);
-
-    return res.json({
-      _id,
-      category,
-      note,
-      name,
-      phone,
+    assists.forEach((assist) => {
+      const location = {
+        type: 'Point',
+        coordinates: [assist.longitude, assist.latitude],
+      };
+      assist.userLocation = location;
     });
+
+    const assist = await Assist.insertMany(assists);
+
+    return res.json(assist);
   }
 
   async show(req, res) {
     const { id } = req.params;
 
     const assist = await Assist.findById(id, {
-      _id: 0,
-      user_id: 0,
-      location: 0,
       createdAt: 0,
       updatedAt: 0,
       __v: 0,
@@ -58,10 +57,8 @@ class AssistController {
     const { userId } = req.params;
 
     const assist = await Assist.find(
-      { user_id: userId },
+      { userId },
       {
-        user_id: 0,
-        location: 0,
         createdAt: 0,
         updatedAt: 0,
         __v: 0,
@@ -84,7 +81,7 @@ class AssistController {
       return res.status(400).json({ error: 'Assist not found' });
     }
 
-    if (assist.user_id !== req.userId) {
+    if (String(assist.userId) !== req.userId) {
       return res
         .status(401)
         .json({ error: "You don't have permission to update this assist" });
@@ -92,14 +89,12 @@ class AssistController {
 
     await assist.update(req.body);
 
-    const { category, note, name, phone } = await Assist.findById(id);
-
-    return res.json({
-      category,
-      note,
-      name,
-      phone,
+    const assistUpdated = await Assist.findById(id, {
+      userLocation: 0,
+      __v: 0,
     });
+
+    return res.json(assistUpdated);
   }
 
   async destroy(req, res) {
@@ -111,7 +106,7 @@ class AssistController {
       return res.status(400).json({ error: 'Assist not found' });
     }
 
-    if (assist.user_id !== req.userId) {
+    if (String(assist.userId) !== req.userId) {
       return res
         .status(401)
         .json({ error: "You don't have permission to delete this assist" });
