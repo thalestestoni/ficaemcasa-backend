@@ -1,10 +1,32 @@
-import Necessity from '../models/Necessity';
+import mongoose from 'mongoose';
 
-class SearchController {
+import User from '../models/User';
+import Necessity from '../models/Necessity';
+import Assist from '../models/Assist';
+
+class SearchNecessityController {
   async index(req, res) {
     const { latitude, longitude } = req.query;
 
-    const { categories } = req.body;
+    const { userId } = req;
+
+    const user = await User.findById({
+      _id: mongoose.Types.ObjectId(userId),
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Usuário não encontrado' });
+    }
+
+    const assistCategories = await Assist.find({
+      userId: mongoose.Types.ObjectId(userId),
+    }).distinct('category');
+
+    if (!assistCategories.length) {
+      return res
+        .status(400)
+        .json({ error: 'Nenhuma categoria cadastrada ainda para ajudar' });
+    }
 
     const necessities = await Necessity.aggregate([
       {
@@ -17,7 +39,10 @@ class SearchController {
             $maxDistance: 10000,
           },
           distanceField: 'distanceCalculated',
-          query: { category: { $in: categories } },
+          query: {
+            userId: { $ne: mongoose.Types.ObjectId(userId) },
+            category: { $in: assistCategories },
+          },
           spherical: false,
           key: 'userLocation',
         },
@@ -65,4 +90,4 @@ class SearchController {
   }
 }
 
-export default new SearchController();
+export default new SearchNecessityController();
