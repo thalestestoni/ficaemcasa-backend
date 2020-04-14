@@ -23,6 +23,7 @@ class AssistController {
       type: 'Point',
       coordinates: [assist.longitude, assist.latitude],
     };
+
     assist.userLocation = location;
 
     const createdAssist = await Assist.create(req.body);
