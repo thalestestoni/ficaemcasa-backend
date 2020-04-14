@@ -24,19 +24,34 @@ class SearchController {
       },
       {
         $group: {
-          _id: '$userId',
-          userId: { $last: '$userId' },
-          userName: { $last: '$userName' },
-          userPhone: { $last: '$userPhone' },
-          userDistance: { $last: '$distanceCalculated' },
-          necessities: {
+          _id: '$category',
+          userId: { $first: '$userId' },
+          userName: { $first: '$userName' },
+          userPhone: { $first: '$userPhone' },
+          userDistance: { $first: '$distanceCalculated' },
+          category: { $first: '$category' },
+          items: {
             $push: {
               _id: '$_id',
-              category: '$category',
               item: '$item',
               quantity: '$quantity',
               unitMeasure: '$unitMeasure',
               status: '$status',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$userId',
+          userId: { $first: '$userId' },
+          userName: { $first: '$userName' },
+          userPhone: { $first: '$userPhone' },
+          userDistance: { $first: '$userDistance' },
+          necessities: {
+            $push: {
+              category: '$category',
+              items: '$items',
             },
           },
         },
