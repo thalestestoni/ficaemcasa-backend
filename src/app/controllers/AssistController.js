@@ -5,36 +5,29 @@ import Assist from '../models/Assist';
 class AssistController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      assists: Yup.array(
-        Yup.object({
-          category: Yup.string().required(),
-          note: Yup.string(),
-          userId: Yup.string().required(),
-          userName: Yup.string().required(),
-          userPhone: Yup.string().required(),
-          longitude: Yup.number().required(),
-          latitude: Yup.number().required(),
-        })
-      ).required(),
+      category: Yup.string().required(),
+      userId: Yup.string().required(),
+      userName: Yup.string().required(),
+      userPhone: Yup.string().required(),
+      longitude: Yup.number().required(),
+      latitude: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Failed to validate fields' });
     }
 
-    const { assists } = req.body;
+    const assist = req.body;
 
-    assists.forEach((assist) => {
-      const location = {
-        type: 'Point',
-        coordinates: [assist.longitude, assist.latitude],
-      };
-      assist.userLocation = location;
-    });
+    const location = {
+      type: 'Point',
+      coordinates: [assist.longitude, assist.latitude],
+    };
+    assist.userLocation = location;
 
-    const assist = await Assist.insertMany(assists);
+    const createdAssist = await Assist.create(req.body);
 
-    return res.json(assist);
+    return res.json(createdAssist);
   }
 
   async show(req, res) {

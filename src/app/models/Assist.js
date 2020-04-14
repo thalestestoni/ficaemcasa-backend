@@ -5,7 +5,6 @@ const PointSchema = require('./utils/PointSchema');
 const AssistSchema = new mongoose.Schema(
   {
     category: { type: String, required: true },
-    note: { type: String, required: false },
     userId: { type: mongoose.ObjectId, required: true },
     userName: { type: String, required: true },
     userPhone: { type: String, required: true },
