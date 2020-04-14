@@ -1,8 +1,10 @@
 import * as Yup from 'yup';
 
-import bcrypt from 'bcryptjs';
+import toTitleCase from 'to-title-case';
 
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+
 import authConfig from '../../config/auth';
 
 import User from '../models/User';
@@ -41,11 +43,13 @@ class UserController {
         .json({ error: 'The password does not match with confirm password.' });
     }
 
-    const password_hash = await bcrypt.hash(password, 8);
-
     const userToAdd = req.body;
 
+    const password_hash = await bcrypt.hash(password, 8);
+
     userToAdd.password_hash = password_hash;
+
+    userToAdd.name = toTitleCase(req.body.name);
 
     const { id, name } = await User.create(userToAdd);
 
