@@ -64,6 +64,7 @@ class NecessityController {
       {
         $group: {
           _id: '$category',
+          category: { $first: '$category' },
           items: {
             $push: {
               _id: '$_id',
@@ -74,9 +75,6 @@ class NecessityController {
             },
           },
         },
-      },
-      {
-        $addFields: { category: '$_id' },
       },
       {
         $project: {
