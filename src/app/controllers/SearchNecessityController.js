@@ -6,45 +6,47 @@ class SearchController {
 
     const { categories } = req.body;
 
-    // agrupar resultado por user_id e category
-
-    // const necessity = await Necessity.find({
-    //   category: {
-    //     $in: categories,
-    //   },
-    //   location: {
-    //     $near: {
-    //       $geometry: {
-    //         type: 'Point',
-    //         coordinates: [longitude, latitude],
-    //       },
-    //       $maxDistance: 10000,
-    //     },
-    //   },
-    // });
-
-    const necessity = await Necessity.aggregate([
+    const necessities = await Necessity.aggregate([
       {
-        $project: {
-          createdAt: 0,
-          updatedAt: 0,
-          __v: 0,
+        $geoNear: {
+          near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [Number(longitude), Number(latitude)],
+            },
+            $maxDistance: 10000,
+          },
+          distanceField: 'distanceCalculated',
+          query: { category: { $in: categories } },
+          spherical: false,
+          key: 'userLocation',
         },
       },
       {
         $group: {
-          _id: '$user_id',
-          category: {
-            $addToSet: '$category',
-          },
-          name: {
-            $addToSet: '$name',
+          _id: '$userId',
+          userId: { $last: '$userId' },
+          userName: { $last: '$userName' },
+          userPhone: { $last: '$userPhone' },
+          userDistance: { $last: '$distanceCalculated' },
+          necessities: {
+            $push: {
+              _id: '$_id',
+              category: '$category',
+              item: '$item',
+              quantity: '$quantity',
+              unitMeasure: '$unitMeasure',
+              status: '$status',
+            },
           },
         },
       },
+      {
+        $project: { _id: 0 },
+      },
     ]);
 
-    return res.json(necessity);
+    return res.json(necessities);
   }
 }
 
