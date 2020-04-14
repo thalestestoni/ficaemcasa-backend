@@ -20,7 +20,9 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Failed to validate fields' });
+      return res
+        .status(400)
+        .json({ error: 'Os dados informados estão inválidos!' });
     }
 
     const { phone, password, confirmPassword } = req.body;
@@ -28,7 +30,9 @@ class UserController {
     const phoneExists = await User.findOne({ phone });
 
     if (phoneExists) {
-      return res.status(400).json({ error: 'Phone already exists.' });
+      return res
+        .status(400)
+        .json({ error: 'O telefone informado já está cadastrado!' });
     }
 
     if (password !== confirmPassword) {
