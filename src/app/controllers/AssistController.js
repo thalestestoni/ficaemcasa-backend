@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import mongoose from 'mongoose';
 
 import Assist from '../models/Assist';
 
@@ -15,6 +16,15 @@ class AssistController {
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Failed to validate fields' });
+    }
+
+    const categoryExists = await Assist.find({
+      userId: mongoose.Types.ObjectId(req.body.userId),
+      category: req.body.category,
+    });
+
+    if (categoryExists.length) {
+      return res.status(400).json({ error: 'Categoria já cadastrada' });
     }
 
     const assist = req.body;
