@@ -1,4 +1,10 @@
 import mongoose from 'mongoose';
+import aws from 'aws-sdk';
+import fs from 'fs';
+import path from 'path';
+import { promisify } from 'util';
+
+const s3 = new aws.S3();
 
 const UserSchema = new mongoose.Schema(
   {
@@ -44,8 +50,28 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      name: String,
+      size: Number,
+      key: String,
+      url: String,
+    },
   },
   { timestamps: true }
 );
+
+UserSchema.pre('remove', function () {
+  if (this.avatar.key && process.env.STORAGE_TYPE === 's3') {
+    return s3
+      .deleteObject({
+        Bucket: process.env.AWS_BUCKET,
+        Key: this.avatar.key,
+      })
+      .promise();
+  }
+  return promisify(fs.unlink)(
+    path.resolve(__dirname, '..', '..', '..', 'tmp', 'uploads', this.avatar.key)
+  );
+});
 
 export default mongoose.model('User', UserSchema);

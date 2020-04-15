@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import path from 'path';
 import helmet from 'helmet';
 import express from 'express';
 import cors from 'cors';
@@ -29,6 +30,11 @@ class App {
     this.server.use(helmet());
     this.server.use(cors());
     this.server.use(express.json());
+    this.server.use(express.urlencoded({ extended: true }));
+    this.server.use(
+      '/files',
+      express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
+    );
   }
 
   routes() {
