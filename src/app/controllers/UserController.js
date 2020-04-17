@@ -43,15 +43,9 @@ class UserController {
         .json({ error: 'The password does not match with confirm password.' });
     }
 
-    const userToAdd = req.body;
+    req.body.name = toTitleCase(req.body.name);
 
-    const password_hash = await bcrypt.hash(password, 8);
-
-    userToAdd.password_hash = password_hash;
-
-    userToAdd.name = toTitleCase(req.body.name);
-
-    const { id, name } = await User.create(userToAdd);
+    const { id, name } = await User.create(req.body);
 
     return res.json({
       user: {
@@ -70,7 +64,7 @@ class UserController {
 
     const user = await User.findById(id, {
       _id: 0,
-      password_hash: 0,
+      password: 0,
       createdAt: 0,
       updatedAt: 0,
       __v: 0,
@@ -113,23 +107,14 @@ class UserController {
     }
 
     if (oldPassword) {
-      const oldPasswordMatch = await bcrypt.compare(
-        oldPassword,
-        user.password_hash
-      );
+      const oldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
 
       if (oldPassword && !oldPasswordMatch) {
         return res.status(401).json({ error: 'Password does not match' });
       }
     }
 
-    const password_hash = await bcrypt.hash(password, 8);
-
-    const userToUpdate = req.body;
-
-    userToUpdate.password_hash = password_hash;
-
-    const { id, name } = await User.findByIdAndUpdate(req.userId, userToUpdate);
+    const { id, name } = await User.findByIdAndUpdate(req.userId, req.body);
 
     return res.json({
       id,

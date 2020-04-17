@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import aws from 'aws-sdk';
 import fs from 'fs';
 import path from 'path';
@@ -46,19 +47,26 @@ const UserSchema = new mongoose.Schema(
       required: false,
       default: true,
     },
-    password_hash: {
-      type: String,
-      required: true,
-    },
     avatar: {
       name: String,
       size: Number,
       key: String,
       url: String,
     },
+    password: {
+      type: String,
+      required: true,
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   { timestamps: true }
 );
+
+UserSchema.pre('save', async function () {
+  const password_hash = await bcrypt.hash(this.password, 8);
+  this.password = password_hash;
+});
 
 UserSchema.pre('remove', function () {
   if (this.avatar.key && process.env.STORAGE_TYPE === 's3') {
