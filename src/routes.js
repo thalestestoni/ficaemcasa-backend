@@ -10,6 +10,8 @@ import AssistController from './app/controllers/AssistController';
 import SearchNecessityController from './app/controllers/SearchNecessityController';
 import SearchAssistController from './app/controllers/SearchAssistController';
 import FileController from './app/controllers/FileController';
+import ForgotPasswordController from './app/controllers/ForgotPasswordController';
+import ResetPasswordController from './app/controllers/ResetPasswordController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -18,6 +20,8 @@ const upload = multer(multerConfig);
 
 routes.post('/user', UserController.store);
 routes.post('/sessions', SessionController.store);
+routes.post('/password/forgot', ForgotPasswordController.store);
+routes.post('/password/reset', ResetPasswordController.store);
 
 routes.use(authMiddleware);
 
