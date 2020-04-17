@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 
+const PointSchema = require('./utils/PointSchema');
+
 const s3 = new aws.S3();
 
 const UserSchema = new mongoose.Schema(
@@ -53,6 +55,11 @@ const UserSchema = new mongoose.Schema(
       key: String,
       url: String,
     },
+    location: {
+      type: PointSchema,
+      index: '2dsphere',
+      required: true,
+    },
     password: {
       type: String,
       required: true,
@@ -68,6 +75,7 @@ UserSchema.pre('save', async function () {
   this.password = password_hash;
 });
 
+/** Remove foto de perfil na Amazon S3 */
 UserSchema.pre('remove', function () {
   if (this.avatar.key && process.env.STORAGE_TYPE === 's3') {
     return s3

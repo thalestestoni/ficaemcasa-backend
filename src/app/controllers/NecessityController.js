@@ -15,8 +15,6 @@ class NecessityController {
           userId: Yup.string().required(),
           userName: Yup.string().required(),
           userPhone: Yup.string().required(),
-          longitude: Yup.number().required(),
-          latitude: Yup.number().required(),
         })
       ).required(),
     });
@@ -26,14 +24,6 @@ class NecessityController {
     }
 
     const { necessities } = req.body;
-
-    necessities.forEach((necessity) => {
-      const location = {
-        type: 'Point',
-        coordinates: [necessity.longitude, necessity.latitude],
-      };
-      necessity.userLocation = location;
-    });
 
     const necessity = await Necessity.insertMany(necessities);
 
@@ -107,10 +97,7 @@ class NecessityController {
 
     await necessity.update(req.body);
 
-    const necessityUpdated = await Necessity.findById(id, {
-      userLocation: 0,
-      __v: 0,
-    });
+    const necessityUpdated = await Necessity.findById(id);
 
     return res.json(necessityUpdated);
   }

@@ -96,7 +96,11 @@ class UserController {
 
     const user = await User.findById(req.userId);
 
-    const { phone, oldPassword, password } = req.body;
+    if (!user) {
+      return res.status(400).json({ error: 'Usuário não encontrado' });
+    }
+
+    const { phone, oldPassword } = req.body;
 
     if (phone && phone !== user.phone) {
       const phoneExists = await User.findOne({ phone });
@@ -109,9 +113,20 @@ class UserController {
     if (oldPassword) {
       const oldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
 
-      if (oldPassword && !oldPasswordMatch) {
+      if (!oldPasswordMatch) {
         return res.status(401).json({ error: 'Password does not match' });
       }
+    }
+
+    const { latitude, longitude } = req.body;
+
+    if (latitude && longitude) {
+      const location = {
+        type: 'Point',
+        coordinates: [longitude, latitude],
+      };
+
+      req.body = { location };
     }
 
     const { id, name } = await User.findByIdAndUpdate(req.userId, req.body);
@@ -140,8 +155,8 @@ class UserController {
 
     await user.remove();
 
-    await Necessity.deleteMany({ user_id: userId });
-    await Assist.deleteMany({ user_id: userId });
+    await Necessity.deleteMany({ userId });
+    await Assist.deleteMany({ userId });
 
     return res.send();
   }

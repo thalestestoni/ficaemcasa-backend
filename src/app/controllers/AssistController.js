@@ -10,8 +10,6 @@ class AssistController {
       userId: Yup.string().required(),
       userName: Yup.string().required(),
       userPhone: Yup.string().required(),
-      longitude: Yup.number().required(),
-      latitude: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -26,15 +24,6 @@ class AssistController {
     if (categoryExists.length) {
       return res.status(400).json({ error: 'Categoria já cadastrada' });
     }
-
-    const assist = req.body;
-
-    const location = {
-      type: 'Point',
-      coordinates: [assist.longitude, assist.latitude],
-    };
-
-    assist.userLocation = location;
 
     const createdAssist = await Assist.create(req.body);
 
@@ -93,10 +82,7 @@ class AssistController {
 
     await assist.update(req.body);
 
-    const assistUpdated = await Assist.findById(id, {
-      userLocation: 0,
-      __v: 0,
-    });
+    const assistUpdated = await Assist.findById(id);
 
     return res.json(assistUpdated);
   }

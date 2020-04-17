@@ -28,23 +28,30 @@ class SearchNecessityController {
         .json({ error: 'Nenhuma categoria cadastrada ainda para ajudar' });
     }
 
+    const usersAround = await User.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: 10000,
+        },
+      },
+    }).distinct('_id');
+
+    if (!usersAround.length) {
+      return res.status(400).json({
+        error:
+          'No momento não encontramos ninguém precisando de ajuda em um raio de 10km',
+      });
+    }
+
     const necessities = await Necessity.aggregate([
       {
-        $geoNear: {
-          near: {
-            $geometry: {
-              type: 'Point',
-              coordinates: [Number(longitude), Number(latitude)],
-            },
-            $maxDistance: 10000,
-          },
-          distanceField: 'distanceCalculated',
-          query: {
-            userId: { $ne: mongoose.Types.ObjectId(userId) },
-            category: { $in: assistCategories },
-          },
-          spherical: false,
-          key: 'userLocation',
+        $match: {
+          userId: { $in: usersAround, $ne: mongoose.Types.ObjectId(userId) },
+          category: { $in: assistCategories },
         },
       },
       {
@@ -53,7 +60,6 @@ class SearchNecessityController {
           userId: { $first: '$userId' },
           userName: { $first: '$userName' },
           userPhone: { $first: '$userPhone' },
-          userDistance: { $first: '$distanceCalculated' },
           category: { $first: '$category' },
           items: {
             $push: {
@@ -72,7 +78,6 @@ class SearchNecessityController {
           userId: { $first: '$userId' },
           userName: { $first: '$userName' },
           userPhone: { $first: '$userPhone' },
-          userDistance: { $first: '$userDistance' },
           necessities: {
             $push: {
               category: '$category',

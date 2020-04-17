@@ -28,23 +28,30 @@ class SearchAssistController {
         .json({ error: 'Nenhuma categoria cadastrada ainda' });
     }
 
+    const usersAround = await User.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: 10000,
+        },
+      },
+    }).distinct('_id');
+
+    if (!usersAround.length) {
+      return res.status(400).json({
+        error:
+          'No momento não encontramos ninguém que possa ajudar com os seus itens',
+      });
+    }
+
     const assists = await Assist.aggregate([
       {
-        $geoNear: {
-          near: {
-            $geometry: {
-              type: 'Point',
-              coordinates: [Number(longitude), Number(latitude)],
-            },
-            $maxDistance: 10000,
-          },
-          distanceField: 'distanceCalculated',
-          query: {
-            userId: { $ne: mongoose.Types.ObjectId(userId) },
-            category: { $in: needyCategories },
-          },
-          spherical: false,
-          key: 'userLocation',
+        $match: {
+          userId: { $in: usersAround, $ne: mongoose.Types.ObjectId(userId) },
+          category: { $in: needyCategories },
         },
       },
       {
