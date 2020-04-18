@@ -62,7 +62,6 @@ class SearchAssistController {
           userId: { $first: '$userId' },
           userName: { $first: '$userName' },
           userPhone: { $first: '$userPhone' },
-          userDistance: { $first: '$distanceCalculated' },
           category: {
             $addToSet: '$category',
           },
