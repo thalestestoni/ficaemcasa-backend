@@ -42,7 +42,10 @@ class SearchAssistController {
 
     if (!usersAround.length) {
       return res.json({
-        info: 'No momento não encontramos nenhum usuário ao seu redor',
+        info:
+          'Poxa, não achamos usuário ao seu redor, ' +
+          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
+          ' e você será avisado(a)!',
       });
     }
 
@@ -73,7 +76,9 @@ class SearchAssistController {
     if (!assists.length) {
       return res.json({
         info:
-          'No momento não encontramos nenhum usuário que possa ajudar com seus itens',
+          'Poxa, não achamos alguém que possa ajudar nessas categorias, ' +
+          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
+          ' e você será avisado(a)!',
       });
     }
 
