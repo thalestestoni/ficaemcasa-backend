@@ -58,7 +58,7 @@ const UserSchema = new mongoose.Schema(
     location: {
       type: PointSchema,
       index: '2dsphere',
-      required: true,
+      required: false,
     },
     password: {
       type: String,
