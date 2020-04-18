@@ -41,9 +41,11 @@ class SearchAssistController {
     }).distinct('_id');
 
     if (!usersAround.length) {
-      return res.status(400).json({
-        error:
-          'No momento não encontramos ninguém que possa ajudar com os seus itens',
+      return res.json({
+        info:
+          'Poxa, não achamos usuário ao seu redor, ' +
+          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
+          ' e você será avisado(a)!',
       });
     }
 
@@ -60,7 +62,6 @@ class SearchAssistController {
           userId: { $first: '$userId' },
           userName: { $first: '$userName' },
           userPhone: { $first: '$userPhone' },
-          userDistance: { $first: '$distanceCalculated' },
           category: {
             $addToSet: '$category',
           },
@@ -70,6 +71,15 @@ class SearchAssistController {
         $project: { _id: 0 },
       },
     ]);
+
+    if (!assists.length) {
+      return res.json({
+        info:
+          'Poxa, não achamos alguém que possa ajudar nessas categorias, ' +
+          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
+          ' e você será avisado(a)!',
+      });
+    }
 
     return res.json(assists);
   }

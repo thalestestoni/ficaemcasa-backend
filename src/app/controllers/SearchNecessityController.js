@@ -41,9 +41,11 @@ class SearchNecessityController {
     }).distinct('_id');
 
     if (!usersAround.length) {
-      return res.status(400).json({
-        error:
-          'No momento não encontramos ninguém precisando de ajuda em um raio de 10km',
+      return res.json({
+        info:
+          'Poxa, não achamos usuário ao seu redor, ' +
+          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
+          ' e você será avisado(a)!',
       });
     }
 
@@ -90,6 +92,15 @@ class SearchNecessityController {
         $project: { _id: 0 },
       },
     ]);
+
+    if (!necessities.length) {
+      return res.json({
+        info:
+          'Poxa, não achamos alguém que você possa ajudar nessas categorias, ' +
+          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
+          ' e você será avisado(a)!',
+      });
+    }
 
     return res.json(necessities);
   }
