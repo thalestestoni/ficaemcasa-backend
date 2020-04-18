@@ -38,16 +38,8 @@ class SearchNecessityController {
           $maxDistance: 10000,
         },
       },
+      active: true,
     }).distinct('_id');
-
-    if (!usersAround.length) {
-      return res.json({
-        info:
-          'Poxa, não achamos usuário ao seu redor, ' +
-          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
-          ' e você será avisado(a)!',
-      });
-    }
 
     const necessities = await Necessity.aggregate([
       {
@@ -58,7 +50,7 @@ class SearchNecessityController {
       },
       {
         $group: {
-          _id: '$category',
+          _id: { userId: '$userId', category: '$category' },
           userId: { $first: '$userId' },
           userName: { $first: '$userName' },
           userPhone: { $first: '$userPhone' },
@@ -92,15 +84,6 @@ class SearchNecessityController {
         $project: { _id: 0 },
       },
     ]);
-
-    if (!necessities.length) {
-      return res.json({
-        info:
-          'Poxa, não achamos alguém que você possa ajudar nessas categorias, ' +
-          'mas não desanime. Novas pessoas podem aparecer a qualquer momento' +
-          ' e você será avisado(a)!',
-      });
-    }
 
     return res.json(necessities);
   }
