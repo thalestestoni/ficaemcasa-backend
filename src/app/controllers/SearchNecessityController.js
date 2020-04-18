@@ -41,9 +41,8 @@ class SearchNecessityController {
     }).distinct('_id');
 
     if (!usersAround.length) {
-      return res.status(400).json({
-        error:
-          'No momento não encontramos ninguém precisando de ajuda em um raio de 10km',
+      return res.json({
+        info: 'No momento não encontramos nenhum usuário ao seu redor',
       });
     }
 
@@ -90,6 +89,13 @@ class SearchNecessityController {
         $project: { _id: 0 },
       },
     ]);
+
+    if (!necessities.length) {
+      return res.json({
+        info:
+          'No momento não encontramos nenhum usuário que dê match com os itens que você pode ajudar',
+      });
+    }
 
     return res.json(necessities);
   }

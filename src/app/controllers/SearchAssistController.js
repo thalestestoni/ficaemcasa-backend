@@ -41,9 +41,8 @@ class SearchAssistController {
     }).distinct('_id');
 
     if (!usersAround.length) {
-      return res.status(400).json({
-        error:
-          'No momento não encontramos ninguém que possa ajudar com os seus itens',
+      return res.json({
+        info: 'No momento não encontramos nenhum usuário ao seu redor',
       });
     }
 
@@ -70,6 +69,13 @@ class SearchAssistController {
         $project: { _id: 0 },
       },
     ]);
+
+    if (!assists.length) {
+      return res.json({
+        info:
+          'No momento não encontramos nenhum usuário que possa ajudar com seus itens',
+      });
+    }
 
     return res.json(assists);
   }
