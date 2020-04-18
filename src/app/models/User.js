@@ -28,12 +28,12 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
-    sonsQuantity: {
+    sons: {
       type: Number,
       required: false,
     },
     sonsAverageAge: {
-      type: Number,
+      type: String,
       required: false,
     },
     sonsAtHome: {
@@ -58,7 +58,7 @@ const UserSchema = new mongoose.Schema(
     location: {
       type: PointSchema,
       index: '2dsphere',
-      required: false,
+      required: true,
     },
     password: {
       type: String,
