@@ -43,9 +43,15 @@ class UserController {
         .json({ error: 'The password does not match with confirm password.' });
     }
 
-    req.body.name = toTitleCase(req.body.name);
+    const userToAdd = req.body;
 
-    const { id, name } = await User.create(req.body);
+    const password_hash = await bcrypt.hash(password, 8);
+
+    userToAdd.password_hash = password_hash;
+
+    userToAdd.name = toTitleCase(req.body.name);
+
+    const { id, name } = await User.create(userToAdd);
 
     return res.json({
       user: {
@@ -64,7 +70,7 @@ class UserController {
 
     const user = await User.findById(id, {
       _id: 0,
-      password: 0,
+      password_hash: 0,
       createdAt: 0,
       updatedAt: 0,
       __v: 0,
@@ -96,11 +102,7 @@ class UserController {
 
     const user = await User.findById(req.userId);
 
-    if (!user) {
-      return res.status(400).json({ error: 'Usuário não encontrado' });
-    }
-
-    const { phone, oldPassword } = req.body;
+    const { phone, oldPassword, password } = req.body;
 
     if (phone && phone !== user.phone) {
       const phoneExists = await User.findOne({ phone });
@@ -111,25 +113,23 @@ class UserController {
     }
 
     if (oldPassword) {
-      const oldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+      const oldPasswordMatch = await bcrypt.compare(
+        oldPassword,
+        user.password_hash
+      );
 
-      if (!oldPasswordMatch) {
+      if (oldPassword && !oldPasswordMatch) {
         return res.status(401).json({ error: 'Password does not match' });
       }
     }
 
-    const { latitude, longitude } = req.body;
+    const password_hash = await bcrypt.hash(password, 8);
 
-    if (latitude && longitude) {
-      const location = {
-        type: 'Point',
-        coordinates: [longitude, latitude],
-      };
+    const userToUpdate = req.body;
 
-      req.body = { location };
-    }
+    userToUpdate.password_hash = password_hash;
 
-    const { id, name } = await User.findByIdAndUpdate(req.userId, req.body);
+    const { id, name } = await User.findByIdAndUpdate(req.userId, userToUpdate);
 
     return res.json({
       id,
@@ -155,8 +155,8 @@ class UserController {
 
     await user.remove();
 
-    await Necessity.deleteMany({ userId });
-    await Assist.deleteMany({ userId });
+    await Necessity.deleteMany({ user_id: userId });
+    await Assist.deleteMany({ user_id: userId });
 
     return res.send();
   }
