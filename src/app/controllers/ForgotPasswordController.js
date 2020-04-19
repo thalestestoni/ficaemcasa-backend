@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import User from '../models/User';
-// import Whatsapp from '../../lib/Whatsapp';
-import SMS from '../../lib/SMS';
+import Twilio from '../../lib/Twilio';
 
 class ForgotPasswordController {
   async store(req, res) {
@@ -20,30 +19,21 @@ class ForgotPasswordController {
 
     await user.update({ passwordResetToken: token, passwordResetExpires: now });
 
-    // Whatsapp
-    // const message = {
-    //   from: process.env.TWILIO_WHATSAPP_NUMBER,
-    //   body: `Código de recuperação para o Fica em Casa App: ${token}`,
-    //   to: `whatsapp:${user.phone}`,
-    // };
-    // const response = await Whatsapp.sendMessage(message);
-    // if (response.errorMessage) {
-    //   return res
-    //     .status(500)
-    //     .json({ error: 'Não foi possível enviar mensagem para o whatsapp' });
-    // }
-
-    const params = {
-      Message: `Código de recuperação para o Fica em Casa App: ${token}`,
-      PhoneNumber: user.phone,
+    /** Twilio Whatsapp and SMS */
+    const message = {
+      // from: process.env.TWILIO_WHATSAPP_NUMBER,
+      // to: `whatsapp:${user.phone}`,
+      from: process.env.TWILIO_SMS_NUMBER,
+      body: `Código de recuperação para o Fica em Casa App: ${token}`,
+      to: user.phone,
     };
 
-    const response = SMS.sendSMS(params);
+    const response = await Twilio.sendMessage(message);
 
-    if (response.err) {
-      return res.status(500).json({
-        error: 'Não foi possível enviar o código de verificacão por SMS',
-      });
+    if (response.errorMessage) {
+      return res
+        .status(500)
+        .json({ error: 'Não foi possível enviar mensagem para o whatsapp' });
     }
 
     return res.send();
