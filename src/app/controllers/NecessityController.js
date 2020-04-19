@@ -90,6 +90,16 @@ class NecessityController {
     }
 
     if (String(necessity.userId) !== req.userId) {
+      const { status } = req.body;
+
+      if (status) {
+        await Necessity.findByIdAndUpdate(id, {
+          status,
+        });
+
+        return res.send();
+      }
+
       return res
         .status(401)
         .json({ error: "You don't have permission to update this necessity" });
