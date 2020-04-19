@@ -6,6 +6,7 @@ import multerConfig from './config/multer';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import NecessityController from './app/controllers/NecessityController';
+import StatusNecessity from './app/controllers/StatusNecessity';
 import AssistController from './app/controllers/AssistController';
 import SearchNecessityController from './app/controllers/SearchNecessityController';
 import SearchAssistController from './app/controllers/SearchAssistController';
@@ -34,6 +35,8 @@ routes.put('/necessity/:id', NecessityController.update);
 routes.get('/necessity/:id', NecessityController.show);
 routes.get('/necessity/:userId/user', NecessityController.index);
 routes.delete('/necessity/:id', NecessityController.destroy);
+
+routes.put('/necessity/:id/status', StatusNecessity.update);
 
 routes.post('/assist', AssistController.store);
 routes.put('/assist/:id', AssistController.update);
