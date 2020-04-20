@@ -7,7 +7,6 @@ class AssistController {
   async store(req, res) {
     const schema = Yup.object().shape({
       category: Yup.string().required(),
-      userId: Yup.string().required(),
       userName: Yup.string().required(),
       userPhone: Yup.string().required(),
     });
@@ -17,13 +16,15 @@ class AssistController {
     }
 
     const categoryExists = await Assist.find({
-      userId: mongoose.Types.ObjectId(req.body.userId),
+      userId: mongoose.Types.ObjectId(req.userId),
       category: req.body.category,
     });
 
     if (categoryExists.length) {
       return res.status(400).json({ error: 'Categoria já cadastrada' });
     }
+
+    req.body['userId'] = req.userId;
 
     const createdAssist = await Assist.create(req.body);
 
