@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import Youch from 'youch';
 import * as Sentry from '@sentry/node';
+import morgan from 'morgan';
 
 import 'express-async-errors';
 
@@ -28,11 +29,16 @@ class App {
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(helmet());
-    this.server.use(
-      cors({
-        origin: process.env.FRONT_URL,
-      })
-    );
+    this.server.use(morgan('dev'));
+    if (process.env.enviroment === 'production') {
+      this.server.use(
+        cors({
+          origin: process.env.FRONT_URL,
+        })
+      );
+    } else {
+      this.server.use(cors());
+    }
     this.server.use(express.json());
     this.server.use(express.urlencoded({ extended: true }));
     this.server.use(

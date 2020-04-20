@@ -12,8 +12,8 @@ class NecessityController {
           category: Yup.string().required(),
           item: Yup.string().required(),
           quantity: Yup.number().required(),
-          userId: Yup.string().required(),
           userName: Yup.string().required(),
+          measureUnit: Yup.string().required(),
           userPhone: Yup.string().required(),
         })
       ).required(),
@@ -24,6 +24,12 @@ class NecessityController {
     }
 
     const { necessities } = req.body;
+
+    const userId = req.userId;
+
+    necessities.forEach((it) => {
+      it.userId = userId;
+    });
 
     const necessity = await Necessity.insertMany(necessities);
 

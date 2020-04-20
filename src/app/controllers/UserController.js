@@ -106,7 +106,9 @@ class UserController {
       const phoneExists = await User.findOne({ phone });
 
       if (phoneExists) {
-        return res.status(400).json({ error: 'Phone already exists.' });
+        return res
+          .status(400)
+          .json({ error: 'O telefone inserido já existe!' });
       }
     }
 
@@ -114,7 +116,9 @@ class UserController {
       const oldPasswordMatch = await bcrypt.compare(oldPassword, user.password);
 
       if (!oldPasswordMatch) {
-        return res.status(401).json({ error: 'Password does not match' });
+        return res
+          .status(401)
+          .json({ error: 'A sua antiga senha está incorreta!' });
       }
     }
 
@@ -129,12 +133,16 @@ class UserController {
       req.body = { location };
     }
 
-    const { id, name } = await User.findByIdAndUpdate(req.userId, req.body);
+    const { id, name, nickname } = await User.findByIdAndUpdate(
+      req.userId,
+      req.body
+    );
 
     return res.json({
       id,
       name,
       phone,
+      nickname,
     });
   }
 
