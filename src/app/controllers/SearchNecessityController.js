@@ -65,7 +65,7 @@ class SearchNecessityController {
               _id: '$_id',
               item: '$item',
               quantity: '$quantity',
-              unitMeasure: '$unitMeasure',
+              measureUnit: '$measureUnit',
               status: '$status',
             },
           },
