@@ -30,7 +30,7 @@ class ForgotPasswordController {
 
     const response = await Twilio.sendMessage(message);
 
-    if (response.errorMessage) {
+    if (response.error) {
       return res
         .status(500)
         .json({ error: 'Não foi possível enviar mensagem para o whatsapp' });
