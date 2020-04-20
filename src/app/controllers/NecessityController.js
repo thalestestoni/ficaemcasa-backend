@@ -3,13 +3,10 @@ import * as Yup from 'yup';
 import mongoose from 'mongoose';
 
 import Necessity from '../models/Necessity';
-import User from '../models/User';
 
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      latitude: Yup.string().required(),
-      longitude: Yup.string().required(),
       necessities: Yup.array(
         Yup.object({
           category: Yup.string().required(),
@@ -35,13 +32,6 @@ class NecessityController {
     });
 
     const necessity = await Necessity.insertMany(necessities);
-
-    const location = {
-      type: 'Point',
-      coordinates: [req.body.longitude, req.body.latitude],
-    };
-
-    await User.findByIdAndUpdate(userId, { location });
 
     return res.json(necessity);
   }
