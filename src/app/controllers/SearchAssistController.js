@@ -22,7 +22,7 @@ class SearchAssistController {
       return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
-    const needyCategories = await Necessity.find({
+    const needyCategories = await Assist.find({
       userId: mongoose.Types.ObjectId(userId),
     }).distinct('category');
 
