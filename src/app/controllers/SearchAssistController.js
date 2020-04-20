@@ -56,8 +56,8 @@ class SearchAssistController {
         $group: {
           _id: '$userId',
           userId: { $first: '$userId' },
-          userName: { $first: '$userName' },
-          userPhone: { $first: '$userPhone' },
+          userName: { $last: '$userName' },
+          userPhone: { $last: '$userPhone' },
           category: {
             $addToSet: '$category',
           },
@@ -87,12 +87,12 @@ class SearchAssistController {
       },
     ]);
 
-    assists.forEach((necessity) => {
-      const location = {
-        longitude: necessity.userCoordinates[0][0],
-        latitude: necessity.userCoordinates[0][1],
+    assists.forEach((assist) => {
+      assist.userCoordinates = {
+        latitude: assist.userCoordinates[0][1],
+        longitude: assist.userCoordinates[0][0],
       };
-      necessity.calculateDistance = calculateDistance(userLocation, location);
+      assist.distance = calculateDistance(userLocation, assist.userCoordinates);
     });
 
     return res.json(assists);
