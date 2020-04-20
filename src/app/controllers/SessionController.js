@@ -12,7 +12,9 @@ class SessionController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Failed to validate fields' });
+      return res
+        .status(400)
+        .json({ error: 'Falha ao validar os campos necessários' });
     }
 
     const { phone, password } = req.body;

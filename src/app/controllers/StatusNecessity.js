@@ -7,7 +7,7 @@ class StatusNecessity {
     const necessity = await Necessity.findById(id);
 
     if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
+      return res.status(400).json({ error: 'Necessidade não encontrada' });
     }
 
     const { status } = req.body;
@@ -16,9 +16,7 @@ class StatusNecessity {
       return res.status(400).json({ error: 'Status não informado' });
     }
 
-    await Necessity.findByIdAndUpdate(id, {
-      status,
-    });
+    await Necessity.findByIdAndUpdate(id, { status });
 
     return res.send();
   }

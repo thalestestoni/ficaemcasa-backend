@@ -12,23 +12,23 @@ class NecessityController {
           category: Yup.string().required(),
           item: Yup.string().required(),
           quantity: Yup.number().required(),
-          userName: Yup.string().required(),
           measureUnit: Yup.string().required(),
+          userName: Yup.string().required(),
           userPhone: Yup.string().required(),
         })
       ).required(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Failed to validate fields' });
+      return res
+        .status(400)
+        .json({ error: 'Falha ao validar os campos necessários' });
     }
 
     const { necessities } = req.body;
 
-    const userId = req.userId;
-
     necessities.forEach((it) => {
-      it.userId = userId;
+      it.userId = req.userId;
     });
 
     const necessity = await Necessity.insertMany(necessities);
@@ -46,7 +46,7 @@ class NecessityController {
     });
 
     if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
+      return res.status(400).json({ error: 'Necessidade não encontrada' });
     }
 
     return res.json(necessity);
@@ -66,7 +66,7 @@ class NecessityController {
               _id: '$_id',
               item: '$item',
               quantity: '$quantity',
-              unitMeasure: '$unitMeasure',
+              measureUnit: '$measureUnit',
               status: '$status',
             },
           },
@@ -80,7 +80,7 @@ class NecessityController {
     ]);
 
     if (!necessity) {
-      return res.status(400).json({ error: 'Necessity or user not found' });
+      return res.status(400).json({ error: 'Necessidade não encontrada' });
     }
 
     return res.json(necessity);
@@ -92,13 +92,13 @@ class NecessityController {
     const necessity = await Necessity.findById(id);
 
     if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
+      return res.status(400).json({ error: 'Necessidade não encontrada' });
     }
 
     if (String(necessity.userId) !== req.userId) {
-      return res
-        .status(401)
-        .json({ error: "You don't have permission to update this necessity" });
+      return res.status(401).json({
+        error: 'Você não tem permissão para atualizar esta necessidade',
+      });
     }
 
     await necessity.update(req.body);
@@ -114,13 +114,13 @@ class NecessityController {
     const necessity = await Necessity.findById(id);
 
     if (!necessity) {
-      return res.status(400).json({ error: 'Necessity not found' });
+      return res.status(400).json({ error: 'Necessidade não encontrada' });
     }
 
     if (String(necessity.userId) !== req.userId) {
-      return res
-        .status(401)
-        .json({ error: "You don't have permission to delete this necessity" });
+      return res.status(401).json({
+        error: 'Você não tem permissão para remover esta necessidade',
+      });
     }
 
     await necessity.remove();

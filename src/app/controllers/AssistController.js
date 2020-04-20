@@ -12,7 +12,9 @@ class AssistController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Failed to validate fields' });
+      return res
+        .status(400)
+        .json({ error: 'Falha ao validar os campos necessários' });
     }
 
     const categoryExists = await Assist.find({
@@ -41,7 +43,7 @@ class AssistController {
     });
 
     if (!assist) {
-      return res.status(400).json({ error: 'Assist not found' });
+      return res.status(400).json({ error: 'Ajuda não encontrada' });
     }
 
     return res.json(assist);
@@ -60,7 +62,9 @@ class AssistController {
     );
 
     if (!assist) {
-      return res.status(400).json({ error: 'Assist or user not found' });
+      return res
+        .status(400)
+        .json({ error: 'Nenhuma ajuda encontrada deste este usuário' });
     }
 
     return res.json(assist);
@@ -72,13 +76,13 @@ class AssistController {
     const assist = await Assist.findById(id);
 
     if (!assist) {
-      return res.status(400).json({ error: 'Assist not found' });
+      return res.status(400).json({ error: 'Ajuda não encontrada' });
     }
 
     if (String(assist.userId) !== req.userId) {
       return res
         .status(401)
-        .json({ error: "You don't have permission to update this assist" });
+        .json({ error: 'Você não tem permissão para atualizar esta ajuda' });
     }
 
     await assist.update(req.body);
@@ -94,13 +98,13 @@ class AssistController {
     const assist = await Assist.findById(id);
 
     if (!assist) {
-      return res.status(400).json({ error: 'Assist not found' });
+      return res.status(400).json({ error: 'Ajuda não encontrada' });
     }
 
     if (String(assist.userId) !== req.userId) {
       return res
         .status(401)
-        .json({ error: "You don't have permission to delete this assist" });
+        .json({ error: 'Você não tem permissão para atualizar esta ajuda' });
     }
 
     await assist.remove();

@@ -40,7 +40,7 @@ class UserController {
     if (password !== confirmPassword) {
       return res
         .status(400)
-        .json({ error: 'The password does not match with confirm password.' });
+        .json({ error: 'A senha e a confirmação de senha não estão iguais.' });
     }
 
     req.body.name = toTitleCase(req.body.name);
@@ -71,7 +71,7 @@ class UserController {
     });
 
     if (!user) {
-      return res.status(500).json({ error: 'User not found' });
+      return res.status(500).json({ error: 'Usuário não encontrado' });
     }
 
     return res.json(user);
@@ -91,7 +91,9 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Failed to validate fields' });
+      return res
+        .status(400)
+        .json({ error: 'Falha ao validar os campos necessários' });
     }
 
     const user = await User.findById(req.userId);
@@ -152,13 +154,13 @@ class UserController {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(400).json({ error: 'User not found' });
+      return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
     if (user.id !== userId) {
       return res
         .status(401)
-        .json({ error: "You don't have permission to delete this user" });
+        .json({ error: 'Você não tem permissão para remover este usuário' });
     }
 
     await user.remove();
