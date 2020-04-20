@@ -3,17 +3,20 @@ import * as Yup from 'yup';
 import mongoose from 'mongoose';
 
 import Necessity from '../models/Necessity';
+import User from '../models/User';
 
 class NecessityController {
   async store(req, res) {
     const schema = Yup.object().shape({
+      latitude: Yup.string().required(),
+      longitude: Yup.string().required(),
       necessities: Yup.array(
         Yup.object({
           category: Yup.string().required(),
           item: Yup.string().required(),
           quantity: Yup.number().required(),
-          userId: Yup.string().required(),
           userName: Yup.string().required(),
+          measureUnit: Yup.string().required(),
           userPhone: Yup.string().required(),
         })
       ).required(),
@@ -25,7 +28,20 @@ class NecessityController {
 
     const { necessities } = req.body;
 
+    const userId = req.userId;
+
+    necessities.forEach((it) => {
+      it.userId = userId;
+    });
+
     const necessity = await Necessity.insertMany(necessities);
+
+    const location = {
+      type: 'Point',
+      coordinates: [req.body.longitude, req.body.latitude],
+    };
+
+    await User.findByIdAndUpdate(userId, { location });
 
     return res.json(necessity);
   }
