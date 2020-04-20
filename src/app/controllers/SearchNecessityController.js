@@ -110,11 +110,15 @@ class SearchNecessityController {
     ]);
 
     necessities.forEach((necessity) => {
-      const location = {
-        longitude: necessity.userCoordinates[0][0],
+      necessity.userCoordinates = {
         latitude: necessity.userCoordinates[0][1],
+        longitude: necessity.userCoordinates[0][0],
       };
-      necessity.calculateDistance = calculateDistance(userLocation, location);
+      const location = {
+        latitude: necessity.userCoordinates.latitude,
+        longitude: necessity.userCoordinates.longitude,
+      };
+      necessity.distance = calculateDistance(userLocation, location);
     });
 
     return res.json(necessities);
