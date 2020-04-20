@@ -114,7 +114,10 @@ class SearchNecessityController {
         latitude: necessity.userCoordinates[0][1],
         longitude: necessity.userCoordinates[0][0],
       };
-      necessity.distance = calculateDistance(userLocation, necessity.userCoordinates);
+      necessity.distance = calculateDistance(
+        userLocation,
+        necessity.userCoordinates
+      );
     });
 
     return res.json(necessities);
