@@ -24,7 +24,7 @@ class AssistController {
       return res.status(400).json({ error: 'Categoria já cadastrada' });
     }
 
-    req.body['userId'] = req.userId;
+    req.body.userId = req.userId;
 
     const createdAssist = await Assist.create(req.body);
 
