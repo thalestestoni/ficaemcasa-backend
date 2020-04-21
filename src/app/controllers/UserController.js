@@ -45,13 +45,13 @@ class UserController {
 
     req.body.name = toTitleCase(req.body.name);
 
-    const { id, name } = await User.create(req.body);
+    const { id, name, active } = await User.create(req.body);
 
     return res.json({
       user: {
-        id,
         name,
         phone,
+        active,
       },
       token: jwt.sign({ id }, authConfig.secret, {
         expiresIn: authConfig.expiresIn,
@@ -135,7 +135,7 @@ class UserController {
       req.body = { location };
     }
 
-    const { id, name, nickname } = await User.findByIdAndUpdate(
+    const { id, name, nickname, active } = await User.findByIdAndUpdate(
       req.userId,
       req.body
     );
@@ -145,6 +145,7 @@ class UserController {
       name,
       phone,
       nickname,
+      active,
     });
   }
 
