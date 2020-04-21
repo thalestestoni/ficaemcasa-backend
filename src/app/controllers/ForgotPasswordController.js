@@ -28,12 +28,12 @@ class ForgotPasswordController {
       to: user.phone,
     };
 
-    const response = await Twilio.sendMessage(message);
-
-    if (response.error) {
+    try {
+      await Twilio.sendMessage(message);
+    } catch (error) {
       return res
         .status(500)
-        .json({ error: 'Não foi possível enviar mensagem para o whatsapp' });
+        .json({ error, twilioError: 'Não foi possível enviar a mensagem' });
     }
 
     return res.send();
