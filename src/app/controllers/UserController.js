@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import authConfig from '../../config/auth';
 
 import User from '../models/User';
+import Phone from '../models/Phone';
 import Necessity from '../models/Necessity';
 import Assist from '../models/Assist';
 
@@ -24,7 +25,7 @@ class UserController {
     if (!(await schema.isValid(req.body))) {
       return res
         .status(400)
-        .json({ error: 'Os dados informados estão inválidos!' });
+        .json({ error: 'Falha ao validar os campos necessários' });
     }
 
     const { phone, password, confirmPassword } = req.body;
@@ -32,9 +33,19 @@ class UserController {
     const phoneExists = await User.findOne({ phone });
 
     if (phoneExists) {
+      return res.status(400).json({ error: 'Usuário já cadastrado' });
+    }
+
+    const registeredPhone = await Phone.findOne({ phone });
+
+    if (!registeredPhone) {
+      return res.status(400).json({ error: 'Telefone não cadastrado ainda' });
+    }
+
+    if (!registeredPhone.activated) {
       return res
         .status(400)
-        .json({ error: 'O telefone informado já está cadastrado!' });
+        .json({ error: 'Este telefone ainda não foi ativado' });
     }
 
     if (password !== confirmPassword) {
@@ -45,7 +56,13 @@ class UserController {
 
     req.body.name = toTitleCase(req.body.name);
 
-    const { id, name } = await User.create(req.body);
+    try {
+      await User.create(req.body);
+    } catch (error) {
+      return res.json(error);
+    }
+
+    const { id, name } = await User.findOne({ phone });
 
     return res.json({
       user: {
@@ -79,11 +96,11 @@ class UserController {
 
   async update(req, res) {
     const schema = Yup.object().shape({
-      oldPassword: Yup.string().min(6),
-      password: Yup.string()
+      password: Yup.string().min(6),
+      oldPassword: Yup.string()
         .min(6)
-        .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
+        .when('password', (password, field) =>
+          password ? field.required() : field
         ),
       confirmPassword: Yup.string().when('password', (password, field) =>
         password ? field.required().oneOf([Yup.ref('password')]) : field
@@ -102,16 +119,14 @@ class UserController {
       return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
-    const { phone, oldPassword } = req.body;
+    const userToUpdate = req.body;
 
-    if (phone && phone !== user.phone) {
-      const phoneExists = await User.findOne({ phone });
+    const { phone, password, confirmPassword, oldPassword } = req.body;
 
-      if (phoneExists) {
-        return res
-          .status(400)
-          .json({ error: 'O telefone inserido já existe!' });
-      }
+    if (phone) {
+      return res
+        .status(401)
+        .json({ error: 'Não é permitido atualização de telefone no momento' });
     }
 
     if (oldPassword) {
@@ -122,6 +137,14 @@ class UserController {
           .status(401)
           .json({ error: 'A sua antiga senha está incorreta!' });
       }
+
+      if (password && password !== confirmPassword) {
+        return res
+          .status(400)
+          .json({ error: 'A senha e a confirmacão de senha nao são iguais' });
+      }
+
+      userToUpdate.password = await bcrypt.hash(password, 8);
     }
 
     const { latitude, longitude } = req.body;
@@ -132,12 +155,12 @@ class UserController {
         coordinates: [longitude, latitude],
       };
 
-      req.body = { location };
+      userToUpdate.location = location;
     }
 
     const { id, name, nickname } = await User.findByIdAndUpdate(
       req.userId,
-      req.body
+      userToUpdate
     );
 
     return res.json({

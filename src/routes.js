@@ -3,21 +3,26 @@ import { Router } from 'express';
 import multer from 'multer';
 import multerConfig from './config/multer';
 
+import PhoneController from './app/controllers/PhoneController';
+import ActivatePhoneController from './app/controllers/ActivatePhoneController';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
+import ForgotPasswordController from './app/controllers/ForgotPasswordController';
+import ResetPasswordController from './app/controllers/ResetPasswordController';
 import NecessityController from './app/controllers/NecessityController';
 import StatusNecessity from './app/controllers/StatusNecessity';
 import AssistController from './app/controllers/AssistController';
 import SearchNecessityController from './app/controllers/SearchNecessityController';
 import SearchAssistController from './app/controllers/SearchAssistController';
 import FileController from './app/controllers/FileController';
-import ForgotPasswordController from './app/controllers/ForgotPasswordController';
-import ResetPasswordController from './app/controllers/ResetPasswordController';
 
 import authMiddleware from './app/middlewares/auth';
 
 const routes = new Router();
 const upload = multer(multerConfig);
+
+routes.post('/phone', PhoneController.store);
+routes.put('/phone/activate', ActivatePhoneController.update);
 
 routes.post('/user', UserController.store);
 routes.post('/sessions', SessionController.store);
