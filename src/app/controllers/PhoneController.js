@@ -5,6 +5,7 @@ import Twilio from '../../lib/Twilio';
 
 import Phone from '../models/Phone';
 import User from '../models/User';
+import formatPhone from '../../utils/formatPhone';
 
 class PhoneController {
   async store(req, res) {
@@ -18,7 +19,7 @@ class PhoneController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { phone } = req.body;
+    const phone = formatPhone(req.body.phone);
 
     const phoneExists = await User.findOne({ phone });
 
