@@ -42,6 +42,7 @@ routes.get('/necessity/:userId/user', NecessityController.index);
 routes.delete('/necessity/:id', NecessityController.destroy);
 
 routes.put('/necessity', StatusNecessity.update);
+routes.get('/necessity/status/pending', StatusNecessity.index);
 
 routes.post('/assist', AssistController.store);
 routes.put('/assist/:id', AssistController.update);

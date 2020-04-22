@@ -1,7 +1,7 @@
-import Necessity from '../models/Necessity';
 import mongoose from 'mongoose';
+import Necessity from '../models/Necessity';
 
-class StatusNecessity {
+class StatusNecessityController {
   async update(req, res) {
     const { status, category, userId } = req.body;
 
@@ -12,15 +12,50 @@ class StatusNecessity {
     await Necessity.update(
       {
         userId: mongoose.Types.ObjectId(userId),
-        category: category,
+        category,
       },
-      { $set: { status: status } },
+      { $set: { status } },
       {
         multi: true,
       }
     );
     return res.send();
   }
+
+  async index(req, res) {
+    const { userId } = req;
+
+    const necessities = await Necessity.aggregate([
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(userId),
+          status: 'pending',
+        },
+      },
+      {
+        $group: {
+          _id: '$category',
+          category: { $first: '$category' },
+          items: {
+            $push: {
+              _id: '$_id',
+              item: '$item',
+              quantity: '$quantity',
+              measureUnit: '$measureUnit',
+              status: '$status',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
+
+    return res.json(necessities);
+  }
 }
 
-export default new StatusNecessity();
+export default new StatusNecessityController();
