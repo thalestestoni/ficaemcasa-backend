@@ -20,12 +20,6 @@ class PhoneController {
 
     const { phone } = req.body;
 
-    const registeredPhone = await Phone.findOne({ phone });
-
-    if (registeredPhone && registeredPhone.activated) {
-      return res.status(400).json({ error: 'O telefone já está ativado' });
-    }
-
     const phoneExists = await User.findOne({ phone });
 
     if (phoneExists) {
@@ -38,6 +32,8 @@ class PhoneController {
 
     const now = new Date();
     now.setMinutes(now.getMinutes() + 2);
+
+    const registeredPhone = await Phone.findOne({ phone });
 
     if (registeredPhone) {
       await Phone.findOneAndUpdate({ phone }, { token, tokenExpires: now });
