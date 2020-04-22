@@ -32,7 +32,7 @@ Instalar o yarn. Escolher a versão correta do SO
 https://classic.yarnpkg.com/en/docs/install#debian-stable
 
 <h3>Instalar dependências do projeto</h3>
-Entrar na pasta desejada (backend, web, mobile) e rodar o comando pelo terminal:
+Entrar na pasta do projeto e rodar o comando pelo terminal:
 
 ```sh
   yarn
