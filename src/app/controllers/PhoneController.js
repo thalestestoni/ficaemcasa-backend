@@ -56,7 +56,7 @@ class PhoneController {
       // to: `whatsapp:${user.phone}`,
       from: process.env.TWILIO_SMS_NUMBER,
       body: `Código de verificação para o Fica em Casa App: ${token}`,
-      to: '+55' + phone,
+      to: phone,
     };
 
     try {
