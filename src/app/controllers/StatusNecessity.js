@@ -1,23 +1,24 @@
 import Necessity from '../models/Necessity';
+import mongoose from 'mongoose';
 
 class StatusNecessity {
   async update(req, res) {
-    const { id } = req.params;
-
-    const necessity = await Necessity.findById(id);
-
-    if (!necessity) {
-      return res.status(400).json({ error: 'Necessidade não encontrada' });
-    }
-
-    const { status } = req.body;
+    const { status, category, userId } = req.body;
 
     if (!status) {
       return res.status(400).json({ error: 'Status não informado' });
     }
 
-    await Necessity.findByIdAndUpdate(id, { status });
-
+    await Necessity.update(
+      {
+        userId: mongoose.Types.ObjectId(userId),
+        category: category,
+      },
+      { $set: { status: status } },
+      {
+        multi: true,
+      }
+    );
     return res.send();
   }
 }

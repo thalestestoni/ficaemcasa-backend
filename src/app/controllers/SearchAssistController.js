@@ -29,7 +29,7 @@ class SearchAssistController {
     if (!needyCategories.length) {
       return res
         .status(400)
-        .json({ error: 'Nenhuma categoria cadastrada ainda' });
+        .json({ error: 'Você ainda não cadastrou necessidades!' });
     }
 
     const usersAround = await User.find({
@@ -58,7 +58,7 @@ class SearchAssistController {
           userId: { $first: '$userId' },
           userName: { $last: '$userName' },
           userPhone: { $last: '$userPhone' },
-          category: {
+          categoriesToHelp: {
             $addToSet: '$category',
           },
         },

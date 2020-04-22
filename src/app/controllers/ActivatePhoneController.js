@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 
 import Phone from '../models/Phone';
+import formatPhone from '../../utils/formatPhone';
 
 class ActivatePhoneController {
   async update(req, res) {
@@ -15,7 +16,8 @@ class ActivatePhoneController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { phone, token } = req.body;
+    const token = req.body.token.split(' ').join('');
+    const phone = formatPhone(req.body.phone);
 
     const registeredPhone = await Phone.findOne({ phone });
 

@@ -41,12 +41,12 @@ routes.get('/necessity/:id', NecessityController.show);
 routes.get('/necessity/:userId/user', NecessityController.index);
 routes.delete('/necessity/:id', NecessityController.destroy);
 
-routes.put('/necessity/:id/status', StatusNecessity.update);
+routes.put('/necessity', StatusNecessity.update);
 
 routes.post('/assist', AssistController.store);
 routes.put('/assist/:id', AssistController.update);
 routes.get('/assist/:id', AssistController.show);
-routes.get('/assist/:userId/user', AssistController.index);
+routes.get('/assist/user/assists', AssistController.index);
 routes.delete('/assist/:id', AssistController.destroy);
 
 routes.get('/search/necessity', SearchNecessityController.index);
