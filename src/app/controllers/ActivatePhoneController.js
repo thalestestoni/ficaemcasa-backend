@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 import Phone from '../models/Phone';
-import formatPhone from '../../utils/formatPhone';
+import formatPhone from '../utils/formatPhone';
 
 class ActivatePhoneController {
   async update(req, res) {

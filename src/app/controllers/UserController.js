@@ -11,7 +11,7 @@ import User from '../models/User';
 import Phone from '../models/Phone';
 import Necessity from '../models/Necessity';
 import Assist from '../models/Assist';
-import formatPhone from '../../utils/formatPhone';
+import formatPhone from '../utils/formatPhone';
 
 class UserController {
   async store(req, res) {

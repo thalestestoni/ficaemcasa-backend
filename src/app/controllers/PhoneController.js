@@ -5,7 +5,7 @@ import Twilio from '../../lib/Twilio';
 
 import Phone from '../models/Phone';
 import User from '../models/User';
-import formatPhone from '../../utils/formatPhone';
+import formatPhone from '../utils/formatPhone';
 
 class PhoneController {
   async store(req, res) {

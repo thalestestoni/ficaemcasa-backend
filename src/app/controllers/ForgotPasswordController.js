@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import User from '../models/User';
 import Twilio from '../../lib/Twilio';
-import formatPhone from '../../utils/formatPhone';
+import formatPhone from '../utils/formatPhone';
 
 class ForgotPasswordController {
   async store(req, res) {
