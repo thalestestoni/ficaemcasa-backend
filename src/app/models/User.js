@@ -59,6 +59,7 @@ const UserSchema = new mongoose.Schema(
     },
     termsOfUseRead: {
       type: Boolean,
+      required: true,
     },
     location: {
       type: PointSchema,
