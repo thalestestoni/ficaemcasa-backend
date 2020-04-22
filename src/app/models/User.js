@@ -57,6 +57,9 @@ const UserSchema = new mongoose.Schema(
       key: String,
       url: String,
     },
+    termsOfUseRead: {
+      type: Boolean,
+    },
     location: {
       type: PointSchema,
       index: '2dsphere',
