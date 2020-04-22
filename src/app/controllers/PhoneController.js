@@ -5,6 +5,7 @@ import Twilio from '../../lib/Twilio';
 
 import Phone from '../models/Phone';
 import User from '../models/User';
+import formatPhone from '../../utils/formatPhone';
 
 class PhoneController {
   async store(req, res) {
@@ -18,7 +19,7 @@ class PhoneController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { phone } = req.body;
+    const phone = formatPhone(req.body.phone);
 
     const registeredPhone = await Phone.findOne({ phone });
 
@@ -55,7 +56,7 @@ class PhoneController {
       // to: `whatsapp:${user.phone}`,
       from: process.env.TWILIO_SMS_NUMBER,
       body: `Código de verificação para o Fica em Casa App: ${token}`,
-      to: phone,
+      to: '+55' + phone,
     };
 
     try {

@@ -11,6 +11,7 @@ import User from '../models/User';
 import Phone from '../models/Phone';
 import Necessity from '../models/Necessity';
 import Assist from '../models/Assist';
+import formatPhone from '../../utils/formatPhone';
 
 class UserController {
   async store(req, res) {
@@ -28,7 +29,8 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { phone, password, confirmPassword } = req.body;
+    const { password, confirmPassword } = req.body;
+    const phone = formatPhone(req.body.phone);
 
     const phoneExists = await User.findOne({ phone });
 
@@ -55,25 +57,25 @@ class UserController {
     }
 
     req.body.name = toTitleCase(req.body.name);
+    req.body.phone = phone;
 
     try {
-      await User.create(req.body);
+      const { id, name, active, nickname } = await User.create(req.body);
+
+      return res.json({
+        user: {
+          name,
+          phone,
+          active,
+          nickname,
+        },
+        token: jwt.sign({ id }, authConfig.secret, {
+          expiresIn: authConfig.expiresIn,
+        }),
+      });
     } catch (error) {
       return res.json(error);
     }
-
-    const { id, name, active } = await User.findOne({ phone });
-
-    return res.json({
-      user: {
-        name,
-        phone,
-        active,
-      },
-      token: jwt.sign({ id }, authConfig.secret, {
-        expiresIn: authConfig.expiresIn,
-      }),
-    });
   }
 
   async show(req, res) {
