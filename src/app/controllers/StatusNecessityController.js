@@ -8,7 +8,6 @@ class StatusNecessityController {
     const schema = Yup.object().shape({
       status: Yup.string().required(),
       categoriesToUpdate: Yup.array().required(),
-      userId: Yup.string().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -17,10 +16,12 @@ class StatusNecessityController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { status, categoriesToUpdate, userId } = req.body;
+    const { status, categoriesToUpdate } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ error: 'Status não informado' });
+    let { userId } = req.body;
+
+    if (!userId) {
+      userId = req.userId;
     }
 
     await Necessity.update(
