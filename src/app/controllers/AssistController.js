@@ -50,7 +50,7 @@ class AssistController {
   }
 
   async index(req, res) {
-    const { userId } = req.params;
+    const userId = req.userId;
 
     const assist = await Assist.find(
       { userId },

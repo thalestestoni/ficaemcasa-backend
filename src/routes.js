@@ -41,7 +41,7 @@ routes.put('/necessity', StatusNecessity.update);
 routes.post('/assist', AssistController.store);
 routes.put('/assist/:id', AssistController.update);
 routes.get('/assist/:id', AssistController.show);
-routes.get('/assist/:userId/user', AssistController.index);
+routes.get('/assist/user/assists', AssistController.index);
 routes.delete('/assist/:id', AssistController.destroy);
 
 routes.get('/search/necessity', SearchNecessityController.index);
