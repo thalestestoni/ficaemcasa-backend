@@ -1,10 +1,23 @@
 import mongoose from 'mongoose';
+import * as Yup from 'yup';
+
 import Necessity from '../models/Necessity';
 
 class StatusNecessityController {
   async update(req, res) {
-    const { status, categoriesToUpdate } = req.body;
-    const { userId } = req;
+    const schema = Yup.object().shape({
+      status: Yup.string().required(),
+      categoriesToUpdate: Yup.array().required(),
+      userId: Yup.string().required(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res
+        .status(400)
+        .json({ error: 'Falha ao validar os campos necessários' });
+    }
+
+    const { status, categoriesToUpdate, userId } = req.body;
 
     if (!status) {
       return res.status(400).json({ error: 'Status não informado' });
