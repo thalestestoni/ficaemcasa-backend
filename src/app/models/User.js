@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 
+import Phone from './Phone';
+
 const PointSchema = require('./utils/PointSchema');
 
 const s3 = new aws.S3();
@@ -71,8 +73,20 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre('save', async function () {
-  const password_hash = await bcrypt.hash(this.password, 8);
-  this.password = password_hash;
+  try {
+    const password_hash = await bcrypt.hash(this.password, 8);
+    this.password = password_hash;
+  } catch (error) {
+    return error;
+  }
+});
+
+UserSchema.pre('save', async function () {
+  try {
+    await Phone.findOneAndRemove({ phone: this.phone });
+  } catch (error) {
+    return error;
+  }
 });
 
 /** Remove foto de perfil na Amazon S3 */

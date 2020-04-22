@@ -15,6 +15,8 @@ import sentryConfig from './config/sentry';
 
 import './database';
 
+const corsOptions = { origin: process.env.FRONT_URL };
+
 class App {
   constructor() {
     this.server = express();
@@ -30,14 +32,10 @@ class App {
     this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(helmet());
     this.server.use(morgan('dev'));
-    if (process.env.enviroment === 'production') {
-      this.server.use(
-        cors({
-          origin: process.env.FRONT_URL,
-        })
-      );
-    } else {
+    if (process.env.ENVIROMENT === 'development') {
       this.server.use(cors());
+    } else {
+      this.server.use(cors(corsOptions));
     }
     this.server.use(express.json());
     this.server.use(express.urlencoded({ extended: true }));
@@ -54,9 +52,13 @@ class App {
 
   exceptionHandler() {
     this.server.use(async (err, req, res, next) => {
-      const errors = await new Youch(err, req).toJSON();
+      if (process.env.NODE_ENV === 'development') {
+        const errors = await new Youch(err, req).toJSON();
 
-      return res.status(500).json(errors);
+        return res.status(500).json(errors);
+      }
+
+      return res.status(500).json({ error: 'Internal server error' });
     });
   }
 }
