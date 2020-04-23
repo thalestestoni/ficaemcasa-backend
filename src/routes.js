@@ -3,8 +3,8 @@ import { Router } from 'express';
 import multer from 'multer';
 import multerConfig from './config/multer';
 
-import PhoneController from './app/controllers/PhoneController';
-import ActivatePhoneController from './app/controllers/ActivatePhoneController';
+import LoginController from './app/controllers/LoginController';
+import ActivateLoginController from './app/controllers/ActivateLoginController';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import ForgotPasswordController from './app/controllers/ForgotPasswordController';
@@ -21,8 +21,8 @@ import authMiddleware from './app/middlewares/auth';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-routes.post('/phone', PhoneController.store);
-routes.put('/phone/activate', ActivatePhoneController.update);
+routes.post('/login/create', LoginController.store);
+routes.put('/login/activate', ActivateLoginController.update);
 
 routes.post('/user', UserController.store);
 routes.post('/sessions', SessionController.store);
