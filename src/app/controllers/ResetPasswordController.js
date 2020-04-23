@@ -1,11 +1,14 @@
 import * as Yup from 'yup';
 
+import formatPhone from '../utils/formatPhone';
+import isPhone from '../utils/isPhone';
+
 import User from '../models/User';
 
 class ResetPasswordController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      phone: Yup.string().required(),
+      login: Yup.string().required(),
       token: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
@@ -17,12 +20,18 @@ class ResetPasswordController {
         .json({ error: 'Os dados informados estão inválidos!' });
     }
 
-    const { phone, token, password, confirmPassword } = req.body;
+    const { token, password, confirmPassword } = req.body;
 
-    const user = await User.findOne({ phone });
+    let { login } = req.body;
+
+    if (isPhone(login)) {
+      login = formatPhone(login);
+    }
+
+    const user = await User.findOne({ login });
 
     if (!user) {
-      return res.status(400).json({ error: 'Telefone não encontrado' });
+      return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
     if (token !== user.passwordResetToken) {

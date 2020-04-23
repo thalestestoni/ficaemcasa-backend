@@ -5,14 +5,17 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 
-import Phone from './Phone';
-
 const PointSchema = require('./utils/PointSchema');
 
 const s3 = new aws.S3();
 
 const UserSchema = new mongoose.Schema(
   {
+    login: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     name: {
       type: String,
       required: true,
@@ -24,7 +27,10 @@ const UserSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: true,
-      unique: true,
+    },
+    email: {
+      type: String,
+      required: false,
     },
     isNeedy: {
       type: Boolean,
@@ -80,14 +86,6 @@ UserSchema.pre('save', async function () {
   try {
     const password_hash = await bcrypt.hash(this.password, 8);
     this.password = password_hash;
-  } catch (error) {
-    return error;
-  }
-});
-
-UserSchema.pre('save', async function () {
-  try {
-    await Phone.findOneAndRemove({ phone: this.phone });
   } catch (error) {
     return error;
   }

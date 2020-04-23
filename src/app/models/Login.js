@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
-const PhoneSchema = new mongoose.Schema(
+const LoginSchema = new mongoose.Schema(
   {
-    phone: {
+    login: {
       type: String,
       required: true,
+      unique: true,
     },
     token: {
       type: String,
@@ -13,6 +14,7 @@ const PhoneSchema = new mongoose.Schema(
     tokenExpires: {
       type: Date,
       required: true,
+      index: { expires: '30m' },
     },
     activated: {
       type: Boolean,
@@ -22,4 +24,4 @@ const PhoneSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Phone', PhoneSchema);
+export default mongoose.model('Login', LoginSchema);

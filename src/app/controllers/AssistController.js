@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import mongoose from 'mongoose';
+import toTitleCase from 'to-title-case';
 
 import Assist from '../models/Assist';
 
@@ -27,6 +28,7 @@ class AssistController {
     }
 
     req.body.userId = req.userId;
+    req.body.userName = toTitleCase(req.body.userName);
 
     const createdAssist = await Assist.create(req.body);
 
@@ -50,7 +52,7 @@ class AssistController {
   }
 
   async index(req, res) {
-    const userId = req.userId;
+    const { userId } = req;
 
     const assist = await Assist.find(
       { userId },

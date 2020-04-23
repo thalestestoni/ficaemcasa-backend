@@ -7,18 +7,23 @@ import jwt from 'jsonwebtoken';
 
 import authConfig from '../../config/auth';
 
+import formatPhone from '../utils/formatPhone';
+import isEmail from '../utils/isEmail';
+import isPhone from '../utils/isPhone';
+
 import User from '../models/User';
-import Phone from '../models/Phone';
+import Login from '../models/Login';
 import Necessity from '../models/Necessity';
 import Assist from '../models/Assist';
-import formatPhone from '../utils/formatPhone';
 
 class UserController {
   async store(req, res) {
     const schema = Yup.object().shape({
+      login: Yup.string().required(),
       name: Yup.string().required(),
       phone: Yup.string().required(),
       isNeedy: Yup.boolean().required(),
+      termsOfUseRead: Yup.boolean().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
     });
@@ -29,53 +34,115 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { password, confirmPassword } = req.body;
-    const phone = formatPhone(req.body.phone);
+    const { login } = req.body;
 
-    const phoneExists = await User.findOne({ phone });
+    if (isEmail(login)) {
+      const email = login;
 
-    if (phoneExists) {
-      return res.status(400).json({ error: 'Usuário já cadastrado' });
+      const emailExists = await User.findOne({ login: email });
+
+      if (emailExists) {
+        return res.status(400).json({ error: 'Email já cadastrado' });
+      }
+
+      const registeredEmail = await Login.findOne({ login: email });
+
+      if (!registeredEmail) {
+        return res.status(400).json({ error: 'Email não cadastrado ainda' });
+      }
+
+      if (!registeredEmail.activated) {
+        return res
+          .status(400)
+          .json({ error: 'Este email ainda não foi ativado' });
+      }
+
+      const { password, confirmPassword } = req.body;
+
+      if (password !== confirmPassword) {
+        return res.status(400).json({
+          error: 'A senha e a confirmação de senha não estão iguais.',
+        });
+      }
+
+      req.body.name = toTitleCase(req.body.name);
+      req.body.phone = formatPhone(req.body.phone);
+
+      try {
+        const { id, name, phone, active, nickname } = await User.create(
+          req.body
+        );
+
+        return res.json({
+          user: {
+            name,
+            phone,
+            active,
+            nickname,
+          },
+          token: jwt.sign({ id }, authConfig.secret, {
+            expiresIn: authConfig.expiresIn,
+          }),
+        });
+      } catch (error) {
+        return res.json(error);
+      }
     }
 
-    const registeredPhone = await Phone.findOne({ phone });
+    if (isPhone(login)) {
+      const phone = formatPhone(login);
 
-    if (!registeredPhone) {
-      return res.status(400).json({ error: 'Telefone não cadastrado ainda' });
+      const phoneExists = await User.findOne({ login: phone });
+
+      if (phoneExists) {
+        return res.status(400).json({ error: 'Telefone já cadastrado' });
+      }
+
+      const registeredPhone = await Login.findOne({ login: phone });
+
+      if (!registeredPhone) {
+        return res.status(400).json({ error: 'Telefone não cadastrado ainda' });
+      }
+
+      if (!registeredPhone.activated) {
+        return res
+          .status(400)
+          .json({ error: 'Este telefone ainda não foi ativado' });
+      }
+
+      const { password, confirmPassword } = req.body;
+
+      if (password !== confirmPassword) {
+        return res.status(400).json({
+          error: 'A senha e a confirmação de senha não estão iguais.',
+        });
+      }
+
+      req.body.name = toTitleCase(req.body.name);
+      req.body.phone = formatPhone(req.body.phone);
+
+      try {
+        const { id, name, active, nickname } = await User.create(req.body);
+
+        return res.json({
+          user: {
+            name,
+            phone,
+            active,
+            nickname,
+          },
+          token: jwt.sign({ id }, authConfig.secret, {
+            expiresIn: authConfig.expiresIn,
+          }),
+        });
+      } catch (error) {
+        return res.json(error);
+      }
     }
 
-    if (!registeredPhone.activated) {
-      return res
-        .status(400)
-        .json({ error: 'Este telefone ainda não foi ativado' });
-    }
-
-    if (password !== confirmPassword) {
-      return res
-        .status(400)
-        .json({ error: 'A senha e a confirmação de senha não estão iguais.' });
-    }
-
-    req.body.name = toTitleCase(req.body.name);
-    req.body.phone = phone;
-
-    try {
-      const { id, name, active, nickname } = await User.create(req.body);
-
-      return res.json({
-        user: {
-          name,
-          phone,
-          active,
-          nickname,
-        },
-        token: jwt.sign({ id }, authConfig.secret, {
-          expiresIn: authConfig.expiresIn,
-        }),
-      });
-    } catch (error) {
-      return res.json(error);
-    }
+    return res
+      .status(400)
+      .json({ error: 'Não foi possível cadastrar o usuário' });
   }
 
   async show(req, res) {
@@ -115,6 +182,8 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
+    console.log(req.userId);
+
     const user = await User.findById(req.userId);
 
     if (!user) {
@@ -123,12 +192,12 @@ class UserController {
 
     const userToUpdate = req.body;
 
-    const { phone, password, confirmPassword, oldPassword } = req.body;
+    const { login, password, confirmPassword, oldPassword } = req.body;
 
-    if (phone) {
+    if (login) {
       return res
         .status(401)
-        .json({ error: 'Não é permitido atualização de telefone no momento' });
+        .json({ error: 'Não é permitido atualização de login no momento' });
     }
 
     if (oldPassword) {
@@ -160,7 +229,7 @@ class UserController {
       userToUpdate.location = location;
     }
 
-    const { id, name, nickname, active } = await User.findByIdAndUpdate(
+    const { id, name, phone, nickname, active } = await User.findByIdAndUpdate(
       req.userId,
       userToUpdate
     );
