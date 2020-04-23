@@ -21,6 +21,7 @@ class UserController {
       isNeedy: Yup.boolean().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
+      useTermsRead: Yup.boolean().required(),
     });
 
     if (!(await schema.isValid(req.body))) {

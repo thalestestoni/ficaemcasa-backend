@@ -60,13 +60,13 @@ class SearchNecessityController {
           userName: { $first: '$userName' },
           userPhone: { $first: '$userPhone' },
           category: { $first: '$category' },
+          status: { $first: '$status' },
           items: {
             $push: {
               _id: '$_id',
               item: '$item',
               quantity: '$quantity',
               measureUnit: '$measureUnit',
-              status: '$status',
             },
           },
         },
@@ -79,6 +79,7 @@ class SearchNecessityController {
           userPhone: { $first: '$userPhone' },
           necessities: {
             $push: {
+              status: '$status',
               category: '$category',
               items: '$items',
             },
