@@ -67,6 +67,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    lastNotificationPendingCategories: {
+      type: Date,
+      default: new Date(),
+    },
     location: {
       type: PointSchema,
       index: '2dsphere',
