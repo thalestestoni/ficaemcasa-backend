@@ -32,10 +32,6 @@ class ActivateLoginController {
         return res.status(400).json({ error: 'Email não encontrado' });
       }
 
-      if (registeredEmail.activated) {
-        return res.status(400).json({ error: 'O email já está ativado' });
-      }
-
       const now = new Date();
 
       if (now > registeredEmail.tokenExpires) {

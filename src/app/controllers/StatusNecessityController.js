@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import * as Yup from 'yup';
 
 import Necessity from '../models/Necessity';
+import User from '../models/User';
 
 class StatusNecessityController {
   async update(req, res) {
@@ -40,25 +41,44 @@ class StatusNecessityController {
   async index(req, res) {
     const { userId } = req;
 
-    const necessities = await Necessity.aggregate([
-      {
-        $match: {
-          userId: mongoose.Types.ObjectId(userId),
-          status: 'pending',
+    const now = new Date().getDay();
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ error: 'Usuário não encontrado' });
+    }
+
+    const lastNotification = user.lastNotificationPendingCategories.getDay();
+
+    if (now > lastNotification) {
+      const necessities = await Necessity.aggregate([
+        {
+          $match: {
+            userId: mongoose.Types.ObjectId(userId),
+            status: 'pending',
+          },
         },
-      },
-      {
-        $group: {
-          _id: '$category',
-          category: { $first: '$category' },
+        {
+          $group: {
+            _id: '$category',
+            category: { $first: '$category' },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
+        {
+          $project: {
+            _id: 0,
+          },
         },
-      },
-    ]);
+      ]);
+
+      user.lastNotificationPendingCategories = new Date();
+      user.save();
+
+      return res.json(necessities);
+    }
+
+    const necessities = [];
 
     return res.json(necessities);
   }
