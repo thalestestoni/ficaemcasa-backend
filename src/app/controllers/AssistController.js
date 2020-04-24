@@ -8,8 +8,6 @@ class AssistController {
   async store(req, res) {
     const schema = Yup.object().shape({
       category: Yup.string().required(),
-      userName: Yup.string().required(),
-      userPhone: Yup.string().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -28,7 +26,6 @@ class AssistController {
     }
 
     req.body.userId = req.userId;
-    req.body.userName = toTitleCase(req.body.userName);
 
     const createdAssist = await Assist.create(req.body);
 

@@ -57,8 +57,6 @@ class SearchNecessityController {
         $group: {
           _id: { userId: '$userId', category: '$category' },
           userId: { $first: '$userId' },
-          userName: { $first: '$userName' },
-          userPhone: { $first: '$userPhone' },
           category: { $first: '$category' },
           status: { $first: '$status' },
           items: {
@@ -75,8 +73,6 @@ class SearchNecessityController {
         $group: {
           _id: '$userId',
           userId: { $first: '$userId' },
-          userName: { $first: '$userName' },
-          userPhone: { $first: '$userPhone' },
           necessities: {
             $push: {
               status: '$status',
@@ -98,11 +94,29 @@ class SearchNecessityController {
         },
       },
       {
-        $set: { userCoordinates: '$user_docs.location.coordinates' },
+        $project: {
+          userId: 1,
+          necessities: 1,
+          userName: { $arrayElemAt: ['$user_docs.name', 0] },
+          userPhone: { $arrayElemAt: ['$user_docs.phone', 0] },
+          userCoordinates: {
+            $arrayElemAt: ['$user_docs.location.coordinates', 0],
+          },
+          userPhoto: { $arrayElemAt: ['$user_docs.avatar.url', 0] },
+        },
       },
       {
         $project: {
-          user_docs: 0,
+          userId: 1,
+          userPhoto: 1,
+          userName: 1,
+          userPhone: 1,
+          necessities: 1,
+          userCoordinates: 1,
+          coordinates: {
+            latitude: { $arrayElemAt: ['$userCoordinates', 1] },
+            longitude: { $arrayElemAt: ['$userCoordinates', 0] },
+          },
         },
       },
       {
@@ -110,15 +124,8 @@ class SearchNecessityController {
       },
     ]);
 
-    necessities.forEach((necessity) => {
-      necessity.userCoordinates = {
-        latitude: necessity.userCoordinates[0][1],
-        longitude: necessity.userCoordinates[0][0],
-      };
-      necessity.distance = calculateDistance(
-        userLocation,
-        necessity.userCoordinates
-      );
+    necessities.forEach((it) => {
+      it.distance = calculateDistance(userLocation, it.coordinates);
     });
 
     return res.json(necessities);
