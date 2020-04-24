@@ -56,8 +56,6 @@ class SearchAssistController {
         $group: {
           _id: '$userId',
           userId: { $first: '$userId' },
-          userName: { $last: '$userName' },
-          userPhone: { $last: '$userPhone' },
           categoriesToHelp: {
             $addToSet: '$category',
           },
@@ -75,11 +73,29 @@ class SearchAssistController {
         },
       },
       {
-        $set: { userCoordinates: '$user_docs.location.coordinates' },
+        $project: {
+          userId: 1,
+          categoriesToHelp: 1,
+          userPhoto: { $arrayElemAt: ['$user_docs.avatar.url', 0] },
+          userName: { $arrayElemAt: ['$user_docs.name', 0] },
+          userPhone: { $arrayElemAt: ['$user_docs.phone', 0] },
+          userCoordinates: {
+            $arrayElemAt: ['$user_docs.location.coordinates', 0],
+          },
+        },
       },
       {
         $project: {
-          user_docs: 0,
+          userId: 1,
+          userPhoto: 1,
+          userName: 1,
+          userPhone: 1,
+          categoriesToHelp: 1,
+          userCoordinates: 1,
+          coordinates: {
+            latitude: { $arrayElemAt: ['$userCoordinates', 1] },
+            longitude: { $arrayElemAt: ['$userCoordinates', 0] },
+          },
         },
       },
       {
@@ -87,12 +103,8 @@ class SearchAssistController {
       },
     ]);
 
-    assists.forEach((assist) => {
-      assist.userCoordinates = {
-        latitude: assist.userCoordinates[0][1],
-        longitude: assist.userCoordinates[0][0],
-      };
-      assist.distance = calculateDistance(userLocation, assist.userCoordinates);
+    assists.forEach((it) => {
+      it.distance = calculateDistance(userLocation, it.coordinates);
     });
 
     return res.json(assists);
