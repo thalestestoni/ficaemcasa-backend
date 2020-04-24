@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import mongoose from 'mongoose';
-import toTitleCase from 'to-title-case';
 
 import Necessity from '../models/Necessity';
 
@@ -13,8 +12,6 @@ class NecessityController {
           item: Yup.string().required(),
           quantity: Yup.number().required(),
           measureUnit: Yup.string().required(),
-          userName: Yup.string().required(),
-          userPhone: Yup.string().required(),
         })
       ).required(),
     });
@@ -29,7 +26,6 @@ class NecessityController {
 
     necessities.forEach((it) => {
       it.userId = req.userId;
-      it.userName = toTitleCase(it.userName);
     });
 
     const necessity = await Necessity.insertMany(necessities);

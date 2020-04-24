@@ -8,8 +8,6 @@ const NecessitySchema = new mongoose.Schema(
     measureUnit: { type: String, required: false },
     status: { type: String, required: false, default: 'available' },
     userId: { type: mongoose.ObjectId, required: true },
-    userName: { type: String, required: true },
-    userPhone: { type: String, required: true },
   },
   { timestamps: true }
 );
