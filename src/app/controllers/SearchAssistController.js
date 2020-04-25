@@ -10,8 +10,6 @@ class SearchAssistController {
   async index(req, res) {
     const { latitude, longitude } = req.query;
 
-    const userLocation = { latitude, longitude };
-
     const { userId } = req;
 
     const user = await User.findById({
@@ -102,6 +100,8 @@ class SearchAssistController {
         $sort: { userCoordinates: 1 },
       },
     ]);
+
+    const userLocation = { latitude, longitude };
 
     assists.forEach((it) => {
       it.distance = calculateDistance(userLocation, it.coordinates);
