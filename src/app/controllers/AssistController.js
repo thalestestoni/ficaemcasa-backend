@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import mongoose from 'mongoose';
-import toTitleCase from 'to-title-case';
 
 import Assist from '../models/Assist';
 
