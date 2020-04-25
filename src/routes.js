@@ -38,8 +38,9 @@ routes.delete('/user/', UserController.destroy);
 routes.post('/necessity', NecessityController.store);
 routes.put('/necessity/:id', NecessityController.update);
 routes.get('/necessity/:id', NecessityController.show);
-routes.get('/necessity/:userId/user', NecessityController.index);
+routes.get('/necessity/user/necessities', NecessityController.index);
 routes.delete('/necessity/:id', NecessityController.destroy);
+routes.delete('/necessity', NecessityController.destroyMany);
 
 routes.put('/necessity', StatusNecessityController.update);
 routes.get('/necessity/status/pending', StatusNecessityController.index);
