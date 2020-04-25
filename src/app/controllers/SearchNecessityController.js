@@ -10,8 +10,6 @@ class SearchNecessityController {
   async index(req, res) {
     const { latitude, longitude } = req.query;
 
-    const userLocation = { latitude, longitude };
-
     const { userId } = req;
 
     const user = await User.findById({
@@ -123,6 +121,8 @@ class SearchNecessityController {
         $sort: { userCoordinates: 1 },
       },
     ]);
+
+    const userLocation = { latitude, longitude };
 
     necessities.forEach((it) => {
       it.distance = calculateDistance(userLocation, it.coordinates);

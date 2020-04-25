@@ -67,6 +67,7 @@ class UserController {
 
       req.body.name = toTitleCase(req.body.name);
       req.body.phone = formatPhone(req.body.phone);
+      req.body.email = email;
 
       try {
         const { id, name, phone, active, nickname, avatar } = await User.create(
@@ -182,8 +183,6 @@ class UserController {
         .status(400)
         .json({ error: 'Falha ao validar os campos necessários' });
     }
-
-    console.log(req.userId);
 
     const user = await User.findById(req.userId);
 
