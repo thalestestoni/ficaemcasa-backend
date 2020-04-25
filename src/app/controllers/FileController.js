@@ -19,7 +19,7 @@ class FileController {
     const user = await User.findById(req.userId);
 
     return res.json({
-      avatar: user.avatar.url,
+      photoUrl: user.avatar.url,
     });
   }
 }
