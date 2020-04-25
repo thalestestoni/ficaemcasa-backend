@@ -183,8 +183,6 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    console.log(req.userId);
-
     const user = await User.findById(req.userId);
 
     if (!user) {
