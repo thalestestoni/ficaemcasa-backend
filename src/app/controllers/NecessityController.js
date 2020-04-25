@@ -106,21 +106,12 @@ class NecessityController {
   }
 
   async destroy(req, res) {
-    const { id } = req.params;
+    const { necessities } = req.body;
 
-    const necessity = await Necessity.findById(id);
-
-    if (!necessity) {
-      return res.status(400).json({ error: 'Necessidade não encontrada' });
-    }
-
-    if (String(necessity.userId) !== req.userId) {
-      return res.status(401).json({
-        error: 'Você não tem permissão para remover esta necessidade',
-      });
-    }
-
-    await necessity.remove();
+    await Necessity.deleteMany({
+      _id: { $in: necessities },
+      userId: req.userId,
+    });
 
     return res.send();
   }
