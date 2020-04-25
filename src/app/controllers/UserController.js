@@ -67,6 +67,7 @@ class UserController {
 
       req.body.name = toTitleCase(req.body.name);
       req.body.phone = formatPhone(req.body.phone);
+      req.body.email = email;
 
       try {
         const { id, name, phone, active, nickname, avatar } = await User.create(
