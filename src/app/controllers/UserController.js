@@ -23,9 +23,9 @@ class UserController {
       name: Yup.string().required(),
       phone: Yup.string().required(),
       isNeedy: Yup.boolean().required(),
-      termsOfUseRead: Yup.boolean().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
+      useTermsRead: Yup.boolean().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -69,7 +69,7 @@ class UserController {
       req.body.phone = formatPhone(req.body.phone);
 
       try {
-        const { id, name, phone, active, nickname } = await User.create(
+        const { id, name, phone, active, nickname, avatar } = await User.create(
           req.body
         );
 
@@ -79,6 +79,7 @@ class UserController {
             phone,
             active,
             nickname,
+            photoUrl: avatar.url,
           },
           token: jwt.sign({ id }, authConfig.secret, {
             expiresIn: authConfig.expiresIn,

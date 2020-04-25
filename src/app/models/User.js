@@ -63,7 +63,7 @@ const UserSchema = new mongoose.Schema(
       key: String,
       url: String,
     },
-    termsOfUseRead: {
+    useTermsRead: {
       type: Boolean,
       required: true,
     },

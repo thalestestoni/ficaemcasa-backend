@@ -58,13 +58,13 @@ class SearchNecessityController {
           _id: { userId: '$userId', category: '$category' },
           userId: { $first: '$userId' },
           category: { $first: '$category' },
+          status: { $first: '$status' },
           items: {
             $push: {
               _id: '$_id',
               item: '$item',
               quantity: '$quantity',
               measureUnit: '$measureUnit',
-              status: '$status',
             },
           },
         },
@@ -75,6 +75,7 @@ class SearchNecessityController {
           userId: { $first: '$userId' },
           necessities: {
             $push: {
+              status: '$status',
               category: '$category',
               items: '$items',
             },

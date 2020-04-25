@@ -16,10 +16,10 @@ class FileController {
 
     await User.findByIdAndUpdate(req.userId, avatar);
 
-    const file = await User.findById(req.userId);
+    const user = await User.findById(req.userId);
 
     return res.json({
-      avatar: file.avatar,
+      photoUrl: user.avatar.url,
     });
   }
 }
