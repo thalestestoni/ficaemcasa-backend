@@ -26,7 +26,8 @@ class SearchNecessityController {
 
     if (!assistCategories.length) {
       return res.status(400).json({
-        error: 'Você ainda não cadastrou categorias em que pode ajudar!',
+        error:
+          'Você ainda não cadastrou as categorias nas quais você pode ajudar!',
       });
     }
 
