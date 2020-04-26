@@ -50,7 +50,7 @@ class NecessityController {
   }
 
   async index(req, res) {
-    const userId = req.userId;
+    const { userId } = req;
 
     const necessity = await Necessity.aggregate([
       { $match: { userId: mongoose.Types.ObjectId(userId) } },
