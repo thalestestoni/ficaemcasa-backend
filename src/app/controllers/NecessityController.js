@@ -115,6 +115,17 @@ class NecessityController {
 
     return res.send();
   }
+
+  async destroyByCategory(req, res) {
+    const { category } = req.body;
+
+    await Necessity.deleteMany({
+      category: category,
+      userId: req.userId,
+    });
+
+    return res.send();
+  }
 }
 
 export default new NecessityController();
