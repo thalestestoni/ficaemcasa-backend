@@ -10,6 +10,7 @@ import SessionController from './app/controllers/SessionController';
 import ForgotPasswordController from './app/controllers/ForgotPasswordController';
 import ResetPasswordController from './app/controllers/ResetPasswordController';
 import NecessityController from './app/controllers/NecessityController';
+import CategoryController from './app/controllers/CategoryController';
 import StatusNecessityController from './app/controllers/StatusNecessityController';
 import AssistController from './app/controllers/AssistController';
 import SearchNecessityController from './app/controllers/SearchNecessityController';
@@ -40,10 +41,7 @@ routes.put('/necessity/:id', NecessityController.update);
 routes.get('/necessity/:id', NecessityController.show);
 routes.get('/necessity/user/necessities', NecessityController.index);
 routes.delete('/necessity', NecessityController.destroy);
-routes.delete(
-  '/necessity/category/many',
-  NecessityController.destroyByCategory
-);
+routes.delete('/necessity/category/many', CategoryController.destroy);
 
 routes.put('/necessity', StatusNecessityController.update);
 routes.get('/necessity/status/pending', StatusNecessityController.index);
