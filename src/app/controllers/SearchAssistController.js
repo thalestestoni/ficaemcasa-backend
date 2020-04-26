@@ -25,9 +25,9 @@ class SearchAssistController {
     }).distinct('category');
 
     if (!needyCategories.length) {
-      return res
-        .status(400)
-        .json({ error: 'Você ainda não cadastrou necessidades!' });
+      return res.status(400).json({
+        error: 'Você ainda não cadastrou categorias em que precisa de ajuda!',
+      });
     }
 
     const usersAround = await User.find({

@@ -25,9 +25,9 @@ class SearchNecessityController {
     }).distinct('category');
 
     if (!assistCategories.length) {
-      return res
-        .status(400)
-        .json({ error: 'Nenhuma categoria cadastrada ainda para ajudar' });
+      return res.status(400).json({
+        error: 'Você ainda não cadastrou categorias em que pode ajudar!',
+      });
     }
 
     const usersAround = await User.find({
