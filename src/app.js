@@ -15,7 +15,7 @@ import sentryConfig from './config/sentry';
 
 import './database';
 
-const corsOptions = { origin: process.env.FRONT_URL };
+const corsOptions = { origin: 'https://fica-em-casa.herokuapp.com/' };
 
 class App {
   constructor() {
@@ -32,11 +32,11 @@ class App {
     this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(helmet());
     this.server.use(morgan('dev'));
-    if (process.env.ENVIROMENT === 'development') {
-      this.server.use(cors());
-    } else {
-      this.server.use(cors(corsOptions));
-    }
+    // if (process.env.ENVIROMENT === 'development') {
+    //   this.server.use(cors());
+    // } else {
+    this.server.use(cors(corsOptions));
+    // }
     this.server.use(express.json());
     this.server.use(express.urlencoded({ extended: true }));
     this.server.use(
