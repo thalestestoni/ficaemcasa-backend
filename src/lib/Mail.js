@@ -6,18 +6,26 @@ class Mail {
     const { host, port, secure, auth } = mailConfig;
 
     this.transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
+      service: 'gmail',
       auth: auth.user ? auth : null,
+      logger: true,
     });
   }
 
   sendMail(message) {
-    return this.transporter.sendMail({
-      ...mailConfig.default,
-      ...message,
-    });
+    return this.transporter.sendMail(
+      {
+        ...mailConfig.default,
+        ...message,
+      },
+      function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(`Email sent: ${info.response}`);
+        }
+      }
+    );
   }
 }
 
