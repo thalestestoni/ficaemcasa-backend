@@ -50,7 +50,7 @@ class NecessityController {
   }
 
   async index(req, res) {
-    const { userId } = req.params;
+    const { userId } = req;
 
     const necessity = await Necessity.aggregate([
       { $match: { userId: mongoose.Types.ObjectId(userId) } },
@@ -110,6 +110,17 @@ class NecessityController {
 
     await Necessity.deleteMany({
       _id: { $in: necessities },
+      userId: req.userId,
+    });
+
+    return res.send();
+  }
+
+  async destroyByCategory(req, res) {
+    const { category } = req.body;
+
+    await Necessity.deleteMany({
+      category: category,
       userId: req.userId,
     });
 

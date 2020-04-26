@@ -33,13 +33,17 @@ routes.use(authMiddleware);
 
 routes.put('/user', UserController.update);
 routes.get('/user/:id', UserController.show);
-routes.delete('/user/', UserController.destroy);
+routes.delete('/user', UserController.destroy);
 
 routes.post('/necessity', NecessityController.store);
 routes.put('/necessity/:id', NecessityController.update);
 routes.get('/necessity/:id', NecessityController.show);
-routes.get('/necessity/:userId/user', NecessityController.index);
-routes.delete('/necessity/:id', NecessityController.destroy);
+routes.get('/necessity/user/necessities', NecessityController.index);
+routes.delete('/necessity', NecessityController.destroy);
+routes.delete(
+  '/necessity/category/many',
+  NecessityController.destroyByCategory
+);
 
 routes.put('/necessity', StatusNecessityController.update);
 routes.get('/necessity/status/pending', StatusNecessityController.index);

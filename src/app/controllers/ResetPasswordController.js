@@ -20,7 +20,9 @@ class ResetPasswordController {
         .json({ error: 'Os dados informados estão inválidos!' });
     }
 
-    const { token, password, confirmPassword } = req.body;
+    const { password, confirmPassword } = req.body;
+
+    const token = req.body.token.split(' ').join('');
 
     let { login } = req.body;
 
