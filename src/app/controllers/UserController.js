@@ -22,7 +22,6 @@ class UserController {
       login: Yup.string().required(),
       name: Yup.string().required(),
       phone: Yup.string().required(),
-      isNeedy: Yup.boolean().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
       useTermsRead: Yup.boolean().required(),
