@@ -33,7 +33,7 @@ routes.use(authMiddleware);
 
 routes.put('/user', UserController.update);
 routes.get('/user/:id', UserController.show);
-routes.delete('/user/', UserController.destroy);
+routes.delete('/user', UserController.destroy);
 
 routes.post('/necessity', NecessityController.store);
 routes.put('/necessity/:id', NecessityController.update);
