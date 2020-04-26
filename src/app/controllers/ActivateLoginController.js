@@ -24,7 +24,7 @@ class ActivateLoginController {
     const { login } = req.body;
 
     if (isEmail(login)) {
-      const email = login;
+      const email = login.toLowerCase();
 
       const registeredEmail = await Login.findOne({ login: email });
 

@@ -26,7 +26,7 @@ class PhoneController {
     const { login } = req.body;
 
     if (isEmail(login)) {
-      const email = login;
+      const email = login.toLowerCase();
 
       const loginExists = await User.findOne({ login: email });
 
