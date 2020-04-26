@@ -40,7 +40,6 @@ routes.put('/necessity/:id', NecessityController.update);
 routes.get('/necessity/:id', NecessityController.show);
 routes.get('/necessity/user/necessities', NecessityController.index);
 routes.delete('/necessity', NecessityController.destroy);
-routes.delete('/necessity/:id', NecessityController.destroy);
 routes.delete(
   '/necessity/category/many',
   NecessityController.destroyByCategory
