@@ -32,10 +32,6 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    isNeedy: {
-      type: Boolean,
-      required: true,
-    },
     sonsQuantity: {
       type: Number,
       required: false,
