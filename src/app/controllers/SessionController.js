@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import authConfig from '../../config/auth';
 import formatPhone from '../utils/formatPhone';
 import isPhone from '../utils/isPhone';
+import isEmail from '../utils/isEmail';
 import User from '../models/User';
 
 class SessionController {
@@ -25,6 +26,10 @@ class SessionController {
 
     if (isPhone(login)) {
       login = formatPhone(login);
+    }
+
+    if (isEmail(login)) {
+      login = login.toLowerCase();
     }
 
     const user = await User.findOne({ login });
