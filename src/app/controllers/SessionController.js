@@ -35,13 +35,13 @@ class SessionController {
     const user = await User.findOne({ login });
 
     if (!user) {
-      return res.status(401).json({ error: 'Usuário não encontrado' });
+      return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Senha incorreta' });
+      return res.status(400).json({ error: 'Senha incorreta' });
     }
 
     const { id, name, phone, active, nickname, avatar } = user;
