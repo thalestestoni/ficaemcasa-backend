@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 import aws from 'aws-sdk';
 import fs from 'fs';
 import path from 'path';
@@ -81,15 +80,6 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-UserSchema.pre('save', async function () {
-  try {
-    const password_hash = await bcrypt.hash(this.password, 8);
-    this.password = password_hash;
-  } catch (error) {
-    return error;
-  }
-});
 
 /** Remove foto de perfil na Amazon S3 */
 UserSchema.pre('remove', function () {

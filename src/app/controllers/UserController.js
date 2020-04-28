@@ -33,6 +33,8 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
+    const userToAdd = req.body;
+
     const { login } = req.body;
 
     if (isEmail(login)) {
@@ -64,13 +66,21 @@ class UserController {
         });
       }
 
-      req.body.name = toTitleCase(req.body.name);
-      req.body.phone = formatPhone(req.body.phone);
-      req.body.email = email;
+      try {
+        const password_hash = await bcrypt.hash(password, 8);
+        userToAdd.password = password_hash;
+      } catch (error) {
+        return error;
+      }
+
+      userToAdd.login = login.toLowerCase();
+      userToAdd.name = toTitleCase(userToAdd.name);
+      userToAdd.phone = formatPhone(req.body.phone);
+      userToAdd.email = email.toLowerCase();
 
       try {
         const { id, name, phone, active, nickname, avatar } = await User.create(
-          req.body
+          userToAdd
         );
 
         return res.json({
@@ -119,11 +129,19 @@ class UserController {
         });
       }
 
-      req.body.name = toTitleCase(req.body.name);
-      req.body.phone = formatPhone(req.body.phone);
+      try {
+        const password_hash = await bcrypt.hash(password, 8);
+        userToAdd.password = password_hash;
+      } catch (error) {
+        return error;
+      }
+
+      userToAdd.login = login.toLowerCase();
+      userToAdd.name = toTitleCase(userToAdd.name);
+      userToAdd.phone = formatPhone(req.body.phone);
 
       try {
-        const { id, name, active, nickname } = await User.create(req.body);
+        const { id, name, active, nickname } = await User.create(userToAdd);
 
         return res.json({
           user: {

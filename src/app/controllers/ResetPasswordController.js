@@ -1,7 +1,9 @@
 import * as Yup from 'yup';
+import bcrypt from 'bcryptjs';
 
 import formatPhone from '../utils/formatPhone';
 import isPhone from '../utils/isPhone';
+import isEmail from '../utils/isEmail';
 
 import User from '../models/User';
 
@@ -30,6 +32,10 @@ class ResetPasswordController {
       login = formatPhone(login);
     }
 
+    if (isEmail(login)) {
+      login = login.toLowerCase();
+    }
+
     const user = await User.findOne({ login });
 
     if (!user) {
@@ -54,7 +60,12 @@ class ResetPasswordController {
         .json({ error: 'Código de verificação expirou, gere um novo' });
     }
 
-    user.password = password;
+    try {
+      const password_hash = await bcrypt.hash(password, 8);
+      user.password = password_hash;
+    } catch (error) {
+      return error;
+    }
 
     user.save();
 
