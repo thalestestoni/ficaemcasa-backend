@@ -56,11 +56,13 @@ class PhoneController {
         });
       }
 
+      const frontUrl = process.env.FRONT_URL;
+
       try {
         await Mail.sendMail({
           to: `<${email}>`,
           subject: 'Fica em Casa App',
-          text: `Código de verificação ${token}`,
+          text: `Link para ativar sua conta ${frontUrl}/second-signup/${token}/email`,
         });
       } catch (error) {
         return error;
@@ -105,7 +107,7 @@ class PhoneController {
         // from: process.env.TWILIO_WHATSAPP_NUMBER,
         // to: `whatsapp:${user.phone}`,
         from: process.env.TWILIO_SMS_NUMBER,
-        body: `Código de verificação para o Fica em Casa App: ${token}`,
+        body: `Link para ativar sua conta ${frontUrl}/second-signup/${token}/telephone`,
         to: phone,
       };
 

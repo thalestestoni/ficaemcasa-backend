@@ -5,6 +5,7 @@ import authConfig from '../../config/auth';
 import formatPhone from '../utils/formatPhone';
 import isPhone from '../utils/isPhone';
 import isEmail from '../utils/isEmail';
+import cookieConfig from '../utils/cookieConfig';
 import User from '../models/User';
 
 class SessionController {
@@ -46,6 +47,12 @@ class SessionController {
 
     const { id, name, phone, active, nickname, avatar } = user;
 
+    const token = jwt.sign({ id }, authConfig.secret, {
+      expiresIn: authConfig.expiresIn,
+    });
+
+    res.cookie('token', token, cookieConfig);
+
     return res.json({
       user: {
         name,
@@ -54,9 +61,6 @@ class SessionController {
         nickname,
         photoUrl: avatar.url,
       },
-      token: jwt.sign({ id }, authConfig.secret, {
-        expiresIn: authConfig.expiresIn,
-      }),
     });
   }
 }
