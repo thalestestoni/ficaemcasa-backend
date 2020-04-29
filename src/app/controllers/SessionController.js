@@ -8,7 +8,6 @@ import isEmail from '../utils/isEmail';
 import cookieConfig from '../utils/cookieConfig';
 import User from '../models/User';
 
-
 class SessionController {
   async store(req, res) {
     const schema = Yup.object().shape({
