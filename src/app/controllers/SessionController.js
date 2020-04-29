@@ -46,6 +46,16 @@ class SessionController {
 
     const { id, name, phone, active, nickname, avatar } = user;
 
+    const token = jwt.sign({ id }, authConfig.secret, {
+      expiresIn: authConfig.expiresIn,
+    });
+
+    res.cookie('token', token, {
+      maxAge: 100000000000000000000000,
+      httpOnly: true,
+      signed: true,
+    });
+
     return res.json({
       user: {
         name,
@@ -54,9 +64,6 @@ class SessionController {
         nickname,
         photoUrl: avatar.url,
       },
-      token: jwt.sign({ id }, authConfig.secret, {
-        expiresIn: authConfig.expiresIn,
-      }),
     });
   }
 }

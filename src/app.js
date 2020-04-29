@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import helmet from 'helmet';
 import express from 'express';
@@ -30,13 +31,15 @@ class App {
 
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
+    this.server.use(cookieParser('dasffadassdgfcqdar'));
     this.server.use(helmet());
     this.server.use(morgan('dev'));
-    // if (process.env.ENVIROMENT === 'development') {
-    //   this.server.use(cors());
-    // } else {
-    this.server.use(cors());
-    // }
+    this.server.use(
+      cors({
+        origin: process.env.FRONT_URL,
+        credentials: true,
+      })
+    );
     this.server.use(express.json());
     this.server.use(express.urlencoded({ extended: true }));
     this.server.use(
