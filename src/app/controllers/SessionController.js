@@ -5,8 +5,9 @@ import authConfig from '../../config/auth';
 import formatPhone from '../utils/formatPhone';
 import isPhone from '../utils/isPhone';
 import isEmail from '../utils/isEmail';
-import User from '../models/User';
 import cookieConfig from '../utils/cookieConfig';
+import User from '../models/User';
+
 
 class SessionController {
   async store(req, res) {
