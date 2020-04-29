@@ -6,6 +6,7 @@ import formatPhone from '../utils/formatPhone';
 import isPhone from '../utils/isPhone';
 import isEmail from '../utils/isEmail';
 import User from '../models/User';
+import cookieConfig from '../utils/cookieConfig';
 
 class SessionController {
   async store(req, res) {
@@ -50,11 +51,7 @@ class SessionController {
       expiresIn: authConfig.expiresIn,
     });
 
-    res.cookie('token', token, {
-      maxAge: 100000000000000000000000,
-      httpOnly: true,
-      signed: true,
-    });
+    res.cookie('token', token, cookieConfig);
 
     return res.json({
       user: {

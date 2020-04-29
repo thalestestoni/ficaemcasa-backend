@@ -10,6 +10,7 @@ import authConfig from '../../config/auth';
 import formatPhone from '../utils/formatPhone';
 import isEmail from '../utils/isEmail';
 import isPhone from '../utils/isPhone';
+import cookieConfig from '../utils/cookieConfig';
 
 import User from '../models/User';
 import Login from '../models/Login';
@@ -83,6 +84,12 @@ class UserController {
           userToAdd
         );
 
+        const token = jwt.sign({ id }, authConfig.secret, {
+          expiresIn: authConfig.expiresIn,
+        });
+
+        res.cookie('token', token, cookieConfig);
+
         return res.json({
           user: {
             name,
@@ -91,9 +98,6 @@ class UserController {
             nickname,
             photoUrl: avatar.url,
           },
-          token: jwt.sign({ id }, authConfig.secret, {
-            expiresIn: authConfig.expiresIn,
-          }),
         });
       } catch (error) {
         return res.json(error);
