@@ -107,7 +107,7 @@ class PhoneController {
         // from: process.env.TWILIO_WHATSAPP_NUMBER,
         // to: `whatsapp:${user.phone}`,
         from: process.env.TWILIO_SMS_NUMBER,
-        body: `Link para ativar sua conta ${frontUrl}/second-signup/${token}/telphone`,
+        body: `Link para ativar sua conta ${frontUrl}/second-signup/${token}/telephone`,
         to: phone,
       };
 
