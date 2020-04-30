@@ -92,9 +92,7 @@ class UserController {
       const { login } = tempLogin;
       userToAdd.email = login.toLowerCase();
       userToAdd.login = login.toLowerCase();
-    }
-
-    if (isPhone(tempLogin.login)) {
+    } else if (isPhone(tempLogin.login)) {
       userToAdd.phone = formatPhone(userToAdd.phone);
     }
 
