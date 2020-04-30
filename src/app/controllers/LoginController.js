@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 import formatPhone from '../utils/formatPhone';
 import isEmail from '../utils/isEmail';
@@ -23,41 +23,45 @@ class PhoneController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { login } = req.body;
+    let { login } = req.body;
+
+    if (!isEmail(login) && !isPhone(login)) {
+      return res.status(400).json({ error: 'Falha ao validar login' });
+    }
 
     if (isEmail(login)) {
-      const email = login.toLowerCase();
+      login = login.toLowerCase();
+    }
 
-      const loginExists = await User.findOne({ login: email });
+    if (isPhone(login)) {
+      login = formatPhone(login);
+    }
 
-      if (loginExists) {
-        return res
-          .status(400)
-          .json({ error: 'O email já está sendo utilizado' });
-      }
+    const userExists = await User.findOne({ login });
 
-      const token = crypto.randomBytes(3).toString('hex');
+    if (userExists) {
+      return res
+        .status(400)
+        .json({ error: 'Este login já está sendo utilizado' });
+    }
 
-      const now = new Date();
-      now.setHours(now.getHours() + 1);
+    const token = uuidv4();
 
-      const registeredEmail = await Login.findOne({ login: email });
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
 
-      if (registeredEmail) {
-        await Login.findOneAndUpdate(
-          { login: email },
-          { token, tokenExpires: now }
-        );
-      } else {
-        await Login.create({
-          login: email,
-          token,
-          tokenExpires: now,
-        });
-      }
+    const loginExists = await Login.findOne({ login });
 
-      const frontUrl = process.env.FRONT_URL;
+    if (loginExists) {
+      await Login.findOneAndUpdate({ login }, { token, tokenExpires: now });
+    } else {
+      await Login.create({ login, token, tokenExpires: now });
+    }
 
+    const frontUrl = process.env.FRONT_URL;
+
+    if (isEmail(login)) {
+      const email = login;
       try {
         await Mail.sendMail({
           to: `<${email}>`,
@@ -67,47 +71,16 @@ class PhoneController {
       } catch (error) {
         return error;
       }
-
-      return res.json({ success: 'Email enviado' });
     }
 
     if (isPhone(login)) {
-      const phone = formatPhone(login);
-
-      const loginExists = await User.findOne({ login: phone });
-
-      if (loginExists) {
-        return res
-          .status(400)
-          .json({ error: 'O telefone já está sendo utilizado' });
-      }
-
-      const token = crypto.randomBytes(3).toString('hex');
-
-      const now = new Date();
-      now.setHours(now.getHours() + 1);
-
-      const registeredPhone = await Login.findOne({ login: phone });
-
-      if (registeredPhone) {
-        await Login.findOneAndUpdate(
-          { login: phone },
-          { token, tokenExpires: now }
-        );
-      } else {
-        await Login.create({
-          login: phone,
-          token,
-          tokenExpires: now,
-        });
-      }
-
+      const phone = login;
       /** Twilio Whatsapp and SMS */
       const message = {
         // from: process.env.TWILIO_WHATSAPP_NUMBER,
-        // to: `whatsapp:${user.phone}`,
+        // to: `whatsapp:${phone}`,
         from: process.env.TWILIO_SMS_NUMBER,
-        body: `Link para ativar sua conta ${frontUrl}/second-signup/${token}/telephone`,
+        body: `Fica em Casa App. Link para ativar sua conta ${frontUrl}/second-signup/${token}/phone`,
         to: phone,
       };
 
@@ -118,11 +91,9 @@ class PhoneController {
           .status(error.status)
           .json({ error, twilioError: 'Não foi possível enviar a mensagem' });
       }
-
-      return res.json({ success: 'SMS enviado' });
     }
 
-    return res.status(400).json({ error: 'Não foi possível validar o login' });
+    return res.send();
   }
 }
 

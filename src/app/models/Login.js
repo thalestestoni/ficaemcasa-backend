@@ -16,10 +16,6 @@ const LoginSchema = new mongoose.Schema(
       required: true,
       index: { expires: '30m' },
     },
-    activated: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true }
 );

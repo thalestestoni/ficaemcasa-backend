@@ -21,9 +21,11 @@ class SessionController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { password } = req.body;
-
     let { login } = req.body;
+
+    if (!isEmail(login) && !isPhone(login)) {
+      return res.status(400).json({ error: 'Falha ao validar login' });
+    }
 
     if (isPhone(login)) {
       login = formatPhone(login);
@@ -38,6 +40,8 @@ class SessionController {
     if (!user) {
       return res.status(400).json({ error: 'Usuário não encontrado' });
     }
+
+    const { password } = req.body;
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 

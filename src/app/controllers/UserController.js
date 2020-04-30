@@ -20,12 +20,12 @@ import Assist from '../models/Assist';
 class UserController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      login: Yup.string().required(),
+      token: Yup.string().required(),
       name: Yup.string().required(),
-      phone: Yup.string().required(),
       password: Yup.string().required().min(6),
       confirmPassword: Yup.string().required().min(6),
       useTermsRead: Yup.boolean().required(),
+      phone: Yup.string(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -34,138 +34,93 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
+    const tempLogin = await Login.findOne({ token: req.body.token });
+
+    if (!tempLogin) {
+      return res
+        .status(400)
+        .json({ error: 'Email ou telefone não cadastrado ainda' });
+    }
+
+    if (isEmail(tempLogin.login)) {
+      if (!req.body.phone) {
+        return res
+          .status(400)
+          .json({ error: 'Você precisa informar o telefone' });
+      }
+
+      if (!isPhone(req.body.phone)) {
+        return res.status(400).json({ error: 'Formato de telefone inválido' });
+      }
+    }
+
+    if (tempLogin.tokenExpires < new Date()) {
+      return res
+        .status(400)
+        .json({ error: 'Código de verificação expirou, gere um novo' });
+    }
+
+    const user = await User.findOne({ login: tempLogin.login });
+
+    if (user) {
+      return res.status(400).json({ error: 'Login já existe' });
+    }
+
+    const { password, confirmPassword } = req.body;
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        error: 'A senha e a confirmação de senha não estão iguais.',
+      });
+    }
+
     const userToAdd = req.body;
 
-    const { login } = req.body;
+    delete userToAdd.token;
 
-    if (isEmail(login)) {
-      const email = login.toLowerCase();
-
-      const emailExists = await User.findOne({ login: email });
-
-      if (emailExists) {
-        return res.status(400).json({ error: 'Email já cadastrado' });
-      }
-
-      const registeredEmail = await Login.findOne({ login: email });
-
-      if (!registeredEmail) {
-        return res.status(400).json({ error: 'Email não cadastrado ainda' });
-      }
-
-      if (!registeredEmail.activated) {
-        return res
-          .status(400)
-          .json({ error: 'Este email ainda não foi ativado' });
-      }
-
-      const { password, confirmPassword } = req.body;
-
-      if (password !== confirmPassword) {
-        return res.status(400).json({
-          error: 'A senha e a confirmação de senha não estão iguais.',
-        });
-      }
-
-      try {
-        const password_hash = await bcrypt.hash(password, 8);
-        userToAdd.password = password_hash;
-      } catch (error) {
-        return error;
-      }
-
-      userToAdd.login = login.toLowerCase();
-      userToAdd.name = toTitleCase(userToAdd.name);
-      userToAdd.phone = formatPhone(req.body.phone);
-      userToAdd.email = email.toLowerCase();
-
-      try {
-        const { id, name, phone, active, nickname, avatar } = await User.create(
-          userToAdd
-        );
-
-        const token = jwt.sign({ id }, authConfig.secret, {
-          expiresIn: authConfig.expiresIn,
-        });
-
-        res.cookie('token', token, cookieConfig);
-
-        return res.json({
-          user: {
-            name,
-            phone,
-            active,
-            nickname,
-            photoUrl: avatar.url,
-          },
-        });
-      } catch (error) {
-        return res.json(error);
-      }
+    try {
+      const password_hash = await bcrypt.hash(password, 8);
+      userToAdd.password = password_hash;
+    } catch (error) {
+      console.log(error);
+      return error;
     }
 
-    if (isPhone(login)) {
-      const phone = formatPhone(login);
+    userToAdd.name = toTitleCase(userToAdd.name);
 
-      const phoneExists = await User.findOne({ login: phone });
-
-      if (phoneExists) {
-        return res.status(400).json({ error: 'Telefone já cadastrado' });
-      }
-
-      const registeredPhone = await Login.findOne({ login: phone });
-
-      if (!registeredPhone) {
-        return res.status(400).json({ error: 'Telefone não cadastrado ainda' });
-      }
-
-      if (!registeredPhone.activated) {
-        return res
-          .status(400)
-          .json({ error: 'Este telefone ainda não foi ativado' });
-      }
-
-      const { password, confirmPassword } = req.body;
-
-      if (password !== confirmPassword) {
-        return res.status(400).json({
-          error: 'A senha e a confirmação de senha não estão iguais.',
-        });
-      }
-
-      try {
-        const password_hash = await bcrypt.hash(password, 8);
-        userToAdd.password = password_hash;
-      } catch (error) {
-        return error;
-      }
-
+    if (isEmail(tempLogin.login)) {
+      const { login } = tempLogin;
+      userToAdd.email = login.toLowerCase();
       userToAdd.login = login.toLowerCase();
-      userToAdd.name = toTitleCase(userToAdd.name);
-      userToAdd.phone = formatPhone(req.body.phone);
-
-      try {
-        const { id, name, active, nickname } = await User.create(userToAdd);
-
-        return res.json({
-          user: {
-            name,
-            phone,
-            active,
-            nickname,
-          },
-          token: jwt.sign({ id }, authConfig.secret, {
-            expiresIn: authConfig.expiresIn,
-          }),
-        });
-      } catch (error) {
-        return res.json(error);
-      }
     }
 
-    return res
-      .status(400)
-      .json({ error: 'Não foi possível cadastrar o usuário' });
+    if (isPhone(tempLogin.login)) {
+      userToAdd.phone = formatPhone(userToAdd.phone);
+    }
+
+    try {
+      const { id, name, phone, active, nickname, avatar } = await User.create(
+        userToAdd
+      );
+
+      const token = jwt.sign({ id }, authConfig.secret, {
+        expiresIn: authConfig.expiresIn,
+      });
+
+      res.cookie('token', token, cookieConfig);
+
+      return res.json({
+        user: {
+          name,
+          phone,
+          active,
+          nickname,
+          photoUrl: avatar.url,
+        },
+      });
+    } catch (error) {
+      return res.json(error);
+    }
   }
 
   async show(req, res) {
