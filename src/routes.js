@@ -4,7 +4,6 @@ import multer from 'multer';
 import multerConfig from './config/multer';
 
 import LoginController from './app/controllers/LoginController';
-import ActivateLoginController from './app/controllers/ActivateLoginController';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import ForgotPasswordController from './app/controllers/ForgotPasswordController';
@@ -23,7 +22,6 @@ const routes = new Router();
 const upload = multer(multerConfig);
 
 routes.post('/login/create', LoginController.store);
-routes.put('/login/activate', ActivateLoginController.update);
 
 routes.post('/user', UserController.store);
 routes.post('/sessions', SessionController.store);
