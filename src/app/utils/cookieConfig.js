@@ -7,6 +7,7 @@ const cookieConfig = {
   httpOnly: true,
   signed: true,
   sameSite: false,
+  credentials: 'include',
 };
 
 export default cookieConfig;
