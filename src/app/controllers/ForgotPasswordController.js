@@ -1,5 +1,5 @@
-import crypto from 'crypto';
 import * as Yup from 'yup';
+import { v4 as uuidv4 } from 'uuid';
 
 import formatPhone from '../utils/formatPhone';
 import isEmail from '../utils/isEmail';
@@ -22,66 +22,61 @@ class ForgotPasswordController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const { login } = req.body;
+    let { login } = req.body;
+
+    if (!isEmail(login) && !isPhone(login)) {
+      return res.status(400).json({ error: 'Falha ao validar login' });
+    }
+
+    if (isPhone(login)) {
+      login = formatPhone(login);
+    }
 
     if (isEmail(login)) {
-      const email = login.toLowerCase();
+      login = login.toLowerCase();
+    }
 
-      const user = await User.findOne({ login: email });
+    const user = await User.findOne({ login });
 
-      if (!user) {
-        return res.status(400).json({ error: 'Email não encontrado' });
-      }
+    if (!user) {
+      return res.status(400).json({ error: 'Login não encontrado' });
+    }
 
-      const token = crypto.randomBytes(3).toString('hex');
+    const token = uuidv4();
 
-      const now = new Date();
-      now.setMinutes(now.getMinutes() + 5);
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 5);
 
-      await user.update({
-        passwordResetToken: token,
-        passwordResetExpires: now,
-      });
+    await user.update({
+      passwordResetToken: token,
+      passwordResetExpires: now,
+    });
 
+    const frontUrl = process.env.FRONT_URL;
+
+    if (isEmail(login)) {
+      const email = login;
       try {
         await Mail.sendMail({
           to: `<${email}>`,
           subject: 'Fica em Casa App',
-          text: `Código de verificação ${token}`,
+          text: `Link para cadastrar uma nova senha ${frontUrl}/second-signup/${token}/email`,
         });
       } catch (error) {
         return error;
       }
-
-      return res.send();
     }
 
     if (isPhone(login)) {
       const phone = formatPhone(req.body.phone);
 
-      const user = await User.findOne({ login: phone });
-
-      if (!user) {
-        return res.status(400).json({ error: 'Telefone não encontrado' });
-      }
-
-      const token = crypto.randomBytes(3).toString('hex');
-
-      const now = new Date();
-      now.setMinutes(now.getMinutes() + 5);
-
-      await user.update({
-        passwordResetToken: token,
-        passwordResetExpires: now,
-      });
-
       /** Twilio Whatsapp and SMS */
       const message = {
         // from: process.env.TWILIO_WHATSAPP_NUMBER,
-        // to: `whatsapp:${user.phone}`,
+        // to: `whatsapp:${phone}`,
         from: process.env.TWILIO_SMS_NUMBER,
-        body: `Código de recuperação para o Fica em Casa App: ${token}`,
-        to: user.phone,
+        body: `Fica em Casa App. Link para cadastrar uma nova senha ${frontUrl}/second-signup/${token}/email`,
+        to: phone,
       };
 
       try {
@@ -91,14 +86,9 @@ class ForgotPasswordController {
           .status(500)
           .json({ error, twilioError: 'Não foi possível enviar a mensagem' });
       }
-
-      return res.send();
     }
 
-    return res.status(400).json({
-      error:
-        'Não foi possível enviar uma código de recuperação para o login informado',
-    });
+    return res.send();
   }
 }
 
