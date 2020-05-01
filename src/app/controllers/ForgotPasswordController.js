@@ -39,7 +39,7 @@ class ForgotPasswordController {
     const user = await User.findOne({ login });
 
     if (!user) {
-      return res.status(400).json({ error: 'Login não encontrado' });
+      return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
     const token = uuidv4();
