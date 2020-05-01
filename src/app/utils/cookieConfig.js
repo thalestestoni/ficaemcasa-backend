@@ -1,5 +1,5 @@
 const dateToExpire = new Date();
-var numberOfDaysToAdd = 31;
+const numberOfDaysToAdd = 31;
 dateToExpire.setDate(dateToExpire.getDate() + numberOfDaysToAdd);
 
 const cookieConfig = {
