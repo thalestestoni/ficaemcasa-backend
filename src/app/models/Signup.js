@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const LoginSchema = new mongoose.Schema(
+const SignupSchema = new mongoose.Schema(
   {
     login: {
       type: String,
@@ -20,4 +20,4 @@ const LoginSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Login', LoginSchema);
+export default mongoose.model('Signup', SignupSchema);
