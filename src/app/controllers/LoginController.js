@@ -42,7 +42,10 @@ class PhoneController {
     if (userExists) {
       return res
         .status(400)
-        .json({ error: 'Este login já está sendo utilizado' });
+        .json({
+          error:
+            'Este email ou telefone já foi cadastrado. Por favor, vá para a seção esqueci minha senha.',
+        });
     }
 
     const token = uuidv4();
