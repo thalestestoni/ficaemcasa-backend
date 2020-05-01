@@ -3,11 +3,12 @@ import { Router } from 'express';
 import multer from 'multer';
 import multerConfig from './config/multer';
 
-import LoginController from './app/controllers/LoginController';
+import SignupController from './app/controllers/SignupController';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import ForgotPasswordController from './app/controllers/ForgotPasswordController';
 import ResetPasswordController from './app/controllers/ResetPasswordController';
+import TokenValidationController from './app/controllers/TokenValidationController';
 import NecessityController from './app/controllers/NecessityController';
 import CategoryController from './app/controllers/CategoryController';
 import StatusNecessityController from './app/controllers/StatusNecessityController';
@@ -21,12 +22,16 @@ import authMiddleware from './app/middlewares/auth';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-routes.post('/login/create', LoginController.store);
-
+routes.post('/signup', SignupController.store);
 routes.post('/user', UserController.store);
 routes.post('/sessions', SessionController.store);
 routes.post('/password/forgot', ForgotPasswordController.store);
 routes.post('/password/reset', ResetPasswordController.store);
+routes.get('/token-validation/signup', TokenValidationController.signupToken);
+routes.get(
+  '/token-validation/reset-password',
+  TokenValidationController.userToken
+);
 
 routes.use(authMiddleware);
 
