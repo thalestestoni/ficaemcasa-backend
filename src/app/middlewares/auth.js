@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import authConfig from '../../config/auth';
 
 export default async (req, res, next) => {
-  const { token } = req.signedCookies;
+  const { token } = req.cookies;
 
   try {
     const decoded = await promisify(jwt.verify)(token, authConfig.secret);
@@ -13,6 +13,10 @@ export default async (req, res, next) => {
 
     return next();
   } catch (err) {
-    return res.status(401).json({ error: 'Token invalid' });
+    return res
+      .status(401)
+      .json({
+        error: 'Erro de sessão, por favor alerte a equipe de desenvolvimento.',
+      });
   }
 };

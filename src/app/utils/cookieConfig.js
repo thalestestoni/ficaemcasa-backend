@@ -6,6 +6,7 @@ const cookieConfig = {
   expires: dateToExpire,
   httpOnly: true,
   sameSite: false,
+  domain: process.env.DOMAIN,
 };
 
 export default cookieConfig;
