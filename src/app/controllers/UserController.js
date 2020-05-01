@@ -13,7 +13,7 @@ import isPhone from '../utils/isPhone';
 import cookieConfig from '../utils/cookieConfig';
 
 import User from '../models/User';
-import Login from '../models/Login';
+import Signup from '../models/Signup';
 import Necessity from '../models/Necessity';
 import Assist from '../models/Assist';
 
@@ -34,7 +34,7 @@ class UserController {
         .json({ error: 'Falha ao validar os campos necessários' });
     }
 
-    const tempLogin = await Login.findOne({ token: req.body.token });
+    const tempLogin = await Signup.findOne({ token: req.body.token });
 
     if (!tempLogin) {
       return res
