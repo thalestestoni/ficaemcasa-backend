@@ -31,7 +31,7 @@ class App {
 
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
-    this.server.use(cookieParser(process.env.APP_SECRET));
+    this.server.use(cookieParser());
     this.server.use(helmet());
     this.server.use(morgan('dev'));
     this.server.use(cors({ corsOptions }));

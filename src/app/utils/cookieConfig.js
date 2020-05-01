@@ -5,9 +5,7 @@ dateToExpire.setDate(dateToExpire.getDate() + numberOfDaysToAdd);
 const cookieConfig = {
   expires: dateToExpire,
   httpOnly: true,
-  signed: true,
   sameSite: false,
-  credentials: 'include',
 };
 
 export default cookieConfig;
