@@ -5,8 +5,8 @@ import formatPhone from '../utils/formatPhone';
 import isEmail from '../utils/isEmail';
 import isPhone from '../utils/isPhone';
 
-import Twilio from '../../lib/Twilio';
-import Mail from '../../lib/Mail';
+import ResetPasswordMail from '../jobs/ResetPasswordMail';
+import ResetPasswordSMS from '../jobs/ResetPasswordSMS';
 
 import User from '../models/User';
 
@@ -52,40 +52,16 @@ class ForgotPasswordController {
       passwordResetExpires: now,
     });
 
-    const frontUrl = process.env.FRONT_URL;
-
     if (isEmail(login)) {
-      const email = login;
-      try {
-        await Mail.sendMail({
-          to: `<${email}>`,
-          subject: 'Fica em Casa App',
-          text: `Link para cadastrar uma nova senha ${frontUrl}/second-signup/${token}/email`,
-        });
-      } catch (error) {
-        return error;
-      }
+      const data = { user, token };
+
+      await ResetPasswordMail.handle(data);
     }
 
     if (isPhone(login)) {
-      const phone = formatPhone(req.body.phone);
+      const data = { phone: login, token };
 
-      /** Twilio Whatsapp and SMS */
-      const message = {
-        // from: process.env.TWILIO_WHATSAPP_NUMBER,
-        // to: `whatsapp:${phone}`,
-        from: process.env.TWILIO_SMS_NUMBER,
-        body: `Fica em Casa App. Link para cadastrar uma nova senha ${frontUrl}/second-signup/${token}/email`,
-        to: phone,
-      };
-
-      try {
-        await Twilio.sendMessage(message);
-      } catch (error) {
-        return res
-          .status(500)
-          .json({ error, twilioError: 'Não foi possível enviar a mensagem' });
-      }
+      await ResetPasswordSMS.handle(data);
     }
 
     return res.send();

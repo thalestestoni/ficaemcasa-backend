@@ -5,8 +5,8 @@ import formatPhone from '../utils/formatPhone';
 import isEmail from '../utils/isEmail';
 import isPhone from '../utils/isPhone';
 
-import Twilio from '../../lib/Twilio';
-import Mail from '../../lib/Mail';
+import SignupMail from '../jobs/SignupMail';
+import SignupSMS from '../jobs/SignupSMS';
 
 import Signup from '../models/Signup';
 import User from '../models/User';
@@ -59,39 +59,16 @@ class SignupController {
       await Signup.create({ login, token, tokenExpires: now });
     }
 
-    const frontUrl = process.env.FRONT_URL;
-
     if (isEmail(login)) {
-      const email = login;
-      try {
-        await Mail.sendMail({
-          to: `<${email}>`,
-          subject: 'Fica em Casa App',
-          text: `Link para ativar sua conta ${frontUrl}/second-signup/${token}/email`,
-        });
-      } catch (error) {
-        return error;
-      }
+      const data = { email: login, token };
+
+      await SignupMail.handle(data);
     }
 
     if (isPhone(login)) {
-      const phone = login;
-      /** Twilio Whatsapp and SMS */
-      const message = {
-        // from: process.env.TWILIO_WHATSAPP_NUMBER,
-        // to: `whatsapp:${phone}`,
-        from: process.env.TWILIO_SMS_NUMBER,
-        body: `Fica em Casa App. Link para ativar sua conta ${frontUrl}/second-signup/${token}/phone`,
-        to: phone,
-      };
+      const data = { phone: login, token };
 
-      try {
-        await Twilio.sendMessage(message);
-      } catch (error) {
-        return res
-          .status(error.status)
-          .json({ error, twilioError: 'Não foi possível enviar a mensagem' });
-      }
+      await SignupSMS.handle(data);
     }
 
     return res.send();
