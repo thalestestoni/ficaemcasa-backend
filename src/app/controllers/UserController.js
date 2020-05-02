@@ -105,7 +105,10 @@ class UserController {
         expiresIn: authConfig.expiresIn,
       });
 
-      res.cookie('token', token, cookieConfig);
+      res.cookie('token', token, {
+        maxAge: 60 * 60 * 24 * 7,
+        httpOnly: true,
+      });
 
       return res.json({
         user: {

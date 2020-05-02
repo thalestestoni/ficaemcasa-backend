@@ -5,7 +5,6 @@ import authConfig from '../../config/auth';
 import formatPhone from '../utils/formatPhone';
 import isPhone from '../utils/isPhone';
 import isEmail from '../utils/isEmail';
-import cookieConfig from '../utils/cookieConfig';
 import User from '../models/User';
 
 class SessionController {
@@ -55,7 +54,10 @@ class SessionController {
       expiresIn: authConfig.expiresIn,
     });
 
-    res.cookie('token', token, cookieConfig);
+    res.cookie('token', token, {
+      maxAge: 60 * 60 * 24 * 7,
+      httpOnly: true,
+    });
 
     return res.json({
       user: {

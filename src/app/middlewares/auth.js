@@ -13,10 +13,10 @@ export default async (req, res, next) => {
 
     return next();
   } catch (err) {
-    return res
-      .status(401)
-      .json({
-        error: 'Erro de sessão, por favor alerte a equipe de desenvolvimento.',
-      });
+    console.log(err);
+    console.log(req);
+    return res.status(401).json({
+      error: 'Erro com o token',
+    });
   }
 };
