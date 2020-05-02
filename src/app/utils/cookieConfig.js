@@ -1,11 +1,6 @@
-const dateToExpire = new Date();
-const numberOfDaysToAdd = 31;
-dateToExpire.setDate(dateToExpire.getDate() + numberOfDaysToAdd);
-
 const cookieConfig = {
-  expires: dateToExpire,
+  maxAge: 60 * 60 * 24 * 31,
   httpOnly: true,
-  sameSite: false,
 };
 
 export default cookieConfig;
