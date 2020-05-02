@@ -104,7 +104,7 @@ class UserController {
         user: {
           name,
           phone,
-          active,
+          isActive: active,
           nickname,
           photoUrl: avatar.url,
         },
@@ -219,7 +219,7 @@ class UserController {
       name,
       phone,
       nickname,
-      active,
+      isActive: active,
     });
   }
 

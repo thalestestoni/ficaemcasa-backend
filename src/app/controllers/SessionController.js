@@ -54,7 +54,7 @@ class SessionController {
       user: {
         name,
         phone,
-        active,
+        isActive: active,
         nickname,
         photoUrl: avatar.url,
       },
