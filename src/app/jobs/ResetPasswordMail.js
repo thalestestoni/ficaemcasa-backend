@@ -6,7 +6,7 @@ class ResetPasswordMail {
   async handle(data) {
     const { user, token } = data;
 
-    const firstName = user.name.split(' ').slice(0, 1).join(' ');
+    const firstName = user.name.split(' ')[0];
 
     await Mail.sendMail({
       to: `${firstName} <${user.email}>`,
@@ -14,7 +14,7 @@ class ResetPasswordMail {
       template: 'resetPassword',
       context: {
         userName: firstName,
-        resetPasswordLink: `${frontUrl}/second-signup/${token}/email`,
+        resetPasswordLink: `${frontUrl}/forgot-password/${token}`,
       },
     });
   }
