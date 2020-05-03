@@ -18,7 +18,10 @@ class TokenValidate {
     const now = new Date();
 
     if (now > signup.tokenExpires) {
-      return res.status(400).json({ error: 'o token expirou, gere um novo.' });
+      return res.status(400).json({
+        error:
+          'O link para confirmação de senha expirou. Por favor, envie novamente a confirmação!',
+      });
     }
 
     return res.send();
@@ -28,22 +31,30 @@ class TokenValidate {
     const { token } = req.body;
 
     if (!token) {
-      return res.status(400).json({ error: 'Token not found' });
+      return res.status(400).json({
+        error: 'Erro na validação, tente clicar novamente no link enviado!',
+      });
     }
 
     const user = await User.findOne({ passwordResetToken: token });
 
     if (!user) {
-      return res.status(400).json({ error: 'Token não encontrado' });
+      return res.status(400).json({
+        error:
+          'Link de validação expirado, verifique se não foi enviado um novo link de alteração!',
+      });
     }
 
     const now = new Date();
 
     if (now > user.passwordResetExpires) {
-      return res.status(400).json({ error: 'o token expirou, gere um novo.' });
+      return res.status(400).json({
+        error:
+          'O link para alteração de senha expirou. Por favor, envie novamente a confirmação!',
+      });
     }
 
-    return res.send();
+    return res.status(200).send();
   }
 }
 
