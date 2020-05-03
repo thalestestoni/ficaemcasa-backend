@@ -54,7 +54,7 @@ class TokenValidate {
       });
     }
 
-    return res.status(200).send();
+    return res.send();
   }
 }
 
