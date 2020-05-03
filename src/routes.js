@@ -27,8 +27,8 @@ routes.post('/user', UserController.store);
 routes.post('/sessions', SessionController.store);
 routes.post('/password/forgot', ForgotPasswordController.store);
 routes.post('/password/reset', ResetPasswordController.store);
-routes.get('/token-validation/signup', TokenValidationController.signupToken);
-routes.get(
+routes.post('/token-validation/signup', TokenValidationController.signupToken);
+routes.post(
   '/token-validation/reset-password',
   TokenValidationController.userToken
 );
