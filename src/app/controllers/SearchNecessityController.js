@@ -119,7 +119,7 @@ class SearchNecessityController {
         },
       },
       {
-        $sort: { userCoordinates: 1 },
+        $sort: { userCoordinates: -1 },
       },
     ]);
 
