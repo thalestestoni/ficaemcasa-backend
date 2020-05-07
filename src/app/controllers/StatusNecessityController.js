@@ -41,17 +41,20 @@ class StatusNecessityController {
   async index(req, res) {
     const { userId } = req;
 
-    const now = new Date().getDay();
-
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(400).json({ error: 'Usuário não encontrado' });
     }
 
-    const lastNotification = user.lastNotificationPendingCategories.getDay();
+    const lastNotification = user.lastNotificationPendingCategories;
 
-    if (now > lastNotification) {
+    const now = new Date();
+
+    if (
+      now.getDate() !== lastNotification.getDate() ||
+      now.getMonth() !== lastNotification.getMonth()
+    ) {
       const necessities = await Necessity.aggregate([
         {
           $match: {
