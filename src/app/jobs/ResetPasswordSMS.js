@@ -12,7 +12,7 @@ class SignupMail {
       // from: process.env.TWILIO_WHATSAPP_NUMBER,
       to: phone,
       from: process.env.TWILIO_SMS_NUMBER,
-      body: `Fica em Casa App. Link para cadastar nova senha ${frontUrl}/forgot-password/${token}/phone`,
+      body: `Olá! Clique no link abaixo para redefinir a sua senha ${frontUrl}/forgot-password/${token}`,
     };
 
     await Twilio.sendMessage(message);

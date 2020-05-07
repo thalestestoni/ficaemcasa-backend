@@ -12,7 +12,7 @@ class SignupSMS {
       // from: process.env.TWILIO_WHATSAPP_NUMBER,
       to: phone,
       from: process.env.TWILIO_SMS_NUMBER,
-      body: `Fica em Casa App. Link para concluir seu cadastro ${frontUrl}/second-signup/${token}/phone`,
+      body: `Olá! Clique no link abaixo para concluir o seu cadastro ${frontUrl}/second-signup/${token}/phone`,
     };
 
     await Twilio.sendMessage(message);
