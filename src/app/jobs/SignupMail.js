@@ -8,7 +8,7 @@ class SignupMail {
 
     await Mail.sendMail({
       to: `<${email}>`,
-      subject: 'Confirmação de email',
+      subject: 'Concluir cadastro',
       template: 'signup',
       context: {
         signupLink: `${frontUrl}/second-signup/${token}/email`,

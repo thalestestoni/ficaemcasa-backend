@@ -10,10 +10,9 @@ class ResetPasswordMail {
 
     await Mail.sendMail({
       to: `${firstName} <${user.email}>`,
-      subject: 'Recuperação de Senha',
+      subject: 'Cadastrar nova senha',
       template: 'resetPassword',
       context: {
-        userName: firstName,
         resetPasswordLink: `${frontUrl}/forgot-password/${token}`,
       },
     });
