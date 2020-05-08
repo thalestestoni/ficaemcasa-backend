@@ -98,7 +98,7 @@ class UserController {
     }
 
     try {
-      const { id, name, phone, active, nickname } = await User.create(
+      const { id, name, phone, active, nickname, avatar } = await User.create(
         userToAdd
       );
 
@@ -108,6 +108,7 @@ class UserController {
           phone,
           isActive: active,
           nickname,
+          photoUrl: avatar.url,
         },
         token: jwt.sign({ id }, authConfig.secret, {
           expiresIn: authConfig.expiresIn,
